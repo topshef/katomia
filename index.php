@@ -25,7 +25,8 @@
       font-family: 'Poppins', sans-serif;
 	  /* font-family: 'Indie Flower', cursive;  */
 	  font-size: 18px;
-    font-weight: bold;
+      font-weight: bold;
+	  padding: 10px; /* Add padding to the input box */
 	
     }
     
@@ -50,20 +51,32 @@
     }
   </style>
   <script>
-    async function postData() {
+
+	function handleClick() {
       const inputText = document.getElementById('myInput').value;
+      const processedData = parseKatomic(inputText); // Preprocess the data
+      postData(processedData); // Pass the processed data to the postData function
+    }
+
+	function parseKatomic(data) {
+      // Dummy processor function to preprocess the data
+      return data.toUpperCase(); // Convert the data to uppercase (ai example)
+    }
+
+    async function postData(inputData) {
       const response = await fetch('https://kpos.uk/deal/write/', {
         method: 'POST',
-        body: new URLSearchParams({ inputText })
+        body: new URLSearchParams({ inputText: inputData }) // Send the processed data
       });
       const responseData = await response.text();
       console.log(responseData);
     }
+
   </script>
 </head>
 <body>
   <img src="logo.png" alt="Logo" class="logo">
   <textarea id="myInput" placeholder="Enter your text"></textarea>
-  <button onclick="postData()">Click Me</button>
+  <button onclick="handleClick()">Click Me</button>
 </body>
 </html>
