@@ -4,7 +4,9 @@
   <title>Simple Webpage</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
-    
+    @import url('https://fonts.googleapis.com/css2?family=Caveat&display=swap');
+	@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
+
     body {
       display: flex;
       flex-direction: column;
@@ -17,8 +19,14 @@
     textarea {
       padding: 10px;
       width: 200px;
-      height: 8em; /* Set the height to approximately 8 lines of text */
-      resize: both; /* Allow the textarea to be resized */
+      height: 8em;
+      resize: both;
+      border-radius: 8px; /* Round the corners of the textarea */
+      font-family: 'Poppins', sans-serif;
+	  /* font-family: 'Indie Flower', cursive;  */
+	  font-size: 18px;
+    font-weight: bold;
+	
     }
     
     button {
@@ -27,6 +35,8 @@
       border: none;
       background-color: #e9e9e9;
       cursor: pointer;
+	  font-family: 'Poppins', sans-serif; /* Switch the font to Poppins */
+      border-radius: 8px; /* Round the corners of the button */
     }
     
     img.logo {

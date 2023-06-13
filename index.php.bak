@@ -4,7 +4,9 @@
   <title>Simple Webpage</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
-    
+    @import url('https://fonts.googleapis.com/css2?family=Caveat&display=swap');
+	@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
+
     body {
       display: flex;
       flex-direction: column;
@@ -14,9 +16,17 @@
       background-color: #fff7d9;
     }
     
-    input[type="text"] {
+    textarea {
       padding: 10px;
       width: 200px;
+      height: 8em;
+      resize: both;
+      border-radius: 8px; /* Round the corners of the textarea */
+      font-family: 'Poppins', sans-serif;
+	  /* font-family: 'Indie Flower', cursive;  */
+	  font-size: 18px;
+    font-weight: bold;
+	
     }
     
     button {
@@ -45,7 +55,7 @@
 </head>
 <body>
   <img src="logo.png" alt="Logo" class="logo">
-  <input type="text" id="myInput" placeholder="Enter your text">
+  <textarea id="myInput" placeholder="Enter your text"></textarea>
   <button onclick="postData()">Click Me</button>
 </body>
 </html>
