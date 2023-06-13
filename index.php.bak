@@ -28,27 +28,18 @@
     }
     
     img.logo {
-      height: 100px; /* Set the height of the logo */
+      height: 100px;
     }
   </style>
   <script>
-    function postData() {
-      var inputText = document.getElementById('myInput').value;
-      
-      // Create a new form data object
-      var formData = new FormData();
-      
-      // Append the input value to the form data
-      formData.append('inputText', inputText);
-      
-      // Create a new XMLHttpRequest object
-      var xhr = new XMLHttpRequest();
-      
-      // Set the HTTP method and URL
-      xhr.open('POST', 'https://kpos.uk/deal/write/', true);
-      
-      // Send the form data
-      xhr.send(formData);
+    async function postData() {
+      const inputText = document.getElementById('myInput').value;
+      const response = await fetch('https://kpos.uk/deal/write/', {
+        method: 'POST',
+        body: new URLSearchParams({ inputText })
+      });
+      const responseData = await response.text();
+      console.log(responseData);
     }
   </script>
 </head>

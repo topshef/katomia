@@ -14,9 +14,11 @@
       background-color: #fff7d9;
     }
     
-    input[type="text"] {
+    textarea {
       padding: 10px;
       width: 200px;
+      height: 8em; /* Set the height to approximately 8 lines of text */
+      resize: both; /* Allow the textarea to be resized */
     }
     
     button {
@@ -45,7 +47,7 @@
 </head>
 <body>
   <img src="logo.png" alt="Logo" class="logo">
-  <input type="text" id="myInput" placeholder="Enter your text">
+  <textarea id="myInput" placeholder="Enter your text"></textarea>
   <button onclick="postData()">Click Me</button>
 </body>
 </html>
