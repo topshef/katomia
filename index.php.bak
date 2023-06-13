@@ -29,7 +29,7 @@
   </style>
 </head>
 <body>
-  <img src="logo.png" alt="Logo" height="100px">
+  <img src="logo.png" alt="Logo" height="80px">
   <input type="text" placeholder="Enter your text">
   <button>Click Me</button>
 </body>
