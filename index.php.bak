@@ -52,26 +52,39 @@
   </style>
   <script>
 
-	function handleClick() {
-      const inputText = document.getElementById('myInput').value;
-      const processedData = parseKatomic(inputText); // Preprocess the data
-      postData(processedData); // Pass the processed data to the postData function
-    }
-
-	function parseKatomic(data) {
+    function parseKatomic(data) {
       // Dummy processor function to preprocess the data
-      return data.toUpperCase(); // Convert the data to uppercase
+      const dataArray = data.split('\n').map(line => line.trim()); // Split into an array by line and trim each line
+      return dataArray;
     }
 
     async function postData(inputData) {
       const response = await fetch('https://kpos.uk/deal/write/', {
         method: 'POST',
-        body: new URLSearchParams({ inputText: inputData }) // Send the processed data
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ inputText: inputData }) // Send the processed data as JSON
       });
       const responseData = await response.text();
       console.log(responseData);
     }
 
+    function handleClick() {
+      const inputText = document.getElementById('myInput').value;
+      const processedData = parseKatomic(inputText); // Preprocess the data
+      postData(processedData); // Pass the processed data to the postData function
+    }
+
+/*
+server test with php
+$jsonData = file_get_contents("php://input");
+$data = json_decode($jsonData, true);
+
+echo "JSON data received:\n";
+print_r($data);
+
+*/
   </script>
 </head>
 <body>
