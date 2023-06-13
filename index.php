@@ -53,10 +53,26 @@
   <script>
 
     function parseKatomic(data) {
-      // Dummy processor function to preprocess the data
-      const dataArray = data.split('\n').map(line => line.trim()); // Split into an array by line and trim each line
-      return dataArray;
+	  const lines = data.split('\n')
+	  const alias = [];
+      lines.forEach(line => {
+        const result = detectAlias(line)
+        if (result) {
+          alias.push(result)
+        }
+      })
+      return {alias, lines} 
     }
+
+	//todo build in account check using 5 char checksum HIP15 #1
+	function detectAlias(line) {
+	  const pattern = /^([a-zA-Z0-9_-]+) is (\d+\.\d+\.\d+)$/;
+	  const matches = line.match(pattern);
+	  if (!matches) return false;
+	  const alias = matches[1];
+	  const hac = matches[2];
+	  return { [alias]: hac };
+	}
 
     async function postData(inputData) {
       const response = await fetch('https://kpos.uk/deal/write/', {
@@ -75,6 +91,10 @@
       const processedData = parseKatomic(inputText); // Preprocess the data
       postData(processedData); // Pass the processed data to the postData function
     }
+
+
+
+
 
 /*
 server test with php
