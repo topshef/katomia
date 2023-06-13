@@ -37,6 +37,12 @@
       cursor: pointer;
 	  font-family: 'Poppins', sans-serif; /* Switch the font to Poppins */
       border-radius: 8px; /* Round the corners of the button */
+      transition: background-color 0.3s, transform 0.3s; /* Add a transition effect */
+    }
+
+    button:hover {
+      background-color: #f5f5f5; /* Lighten the background color when hovering */
+      transform: scale(1.05); /* Add a slight scaling effect when hovering */
     }
     
     img.logo {
