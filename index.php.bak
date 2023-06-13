@@ -11,7 +11,7 @@
       align-items: center;
       justify-content: center;
       font-family: 'Indie Flower', cursive;
-	  background-color: #fff7d9;
+      background-color: #fff7d9;
     }
     
     input[type="text"] {
@@ -26,11 +26,35 @@
       background-color: #e9e9e9;
       cursor: pointer;
     }
+    
+    img.logo {
+      height: 100px; /* Set the height of the logo */
+    }
   </style>
+  <script>
+    function postData() {
+      var inputText = document.getElementById('myInput').value;
+      
+      // Create a new form data object
+      var formData = new FormData();
+      
+      // Append the input value to the form data
+      formData.append('inputText', inputText);
+      
+      // Create a new XMLHttpRequest object
+      var xhr = new XMLHttpRequest();
+      
+      // Set the HTTP method and URL
+      xhr.open('POST', 'https://kpos.uk/deal/write/', true);
+      
+      // Send the form data
+      xhr.send(formData);
+    }
+  </script>
 </head>
 <body>
-  <img src="logo.png" alt="Logo" height="80px">
-  <input type="text" placeholder="Enter your text">
-  <button>Click Me</button>
+  <img src="logo.png" alt="Logo" class="logo">
+  <input type="text" id="myInput" placeholder="Enter your text">
+  <button onclick="postData()">Click Me</button>
 </body>
 </html>
