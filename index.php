@@ -52,7 +52,7 @@
 	  margin: 10px; 
     }
 	
-	.logo-text {
+	.logo-text, #bannerNotice {
 		margin: 10px; 
 	}
 	
@@ -161,6 +161,7 @@
 	  previewDiv.innerText = JSON.stringify(processedData, null, 2)
 	  previewDiv.style.display = 'block'
 	  
+	  document.getElementById('bannerNotice').innerHTML = 'Preview updated:'
 	  return processedData
     }
 
@@ -182,7 +183,7 @@
 		// Copy permalink to clipboard
 		navigator.clipboard.writeText(window.location.href)
 
-		document.getElementById('bannerNotice').innerHTML = '<a href="' + window.location.href + '" target="_blank">Copied!</a>'
+		document.getElementById('bannerNotice').innerHTML = '<a href="' + window.location.href + '" target="_blank">An offline permalink was copied to clipboard</a>'
 		//document.getElementById('copyConfirmed').style.display = 'inline'
 	})
 
