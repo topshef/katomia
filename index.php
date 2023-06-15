@@ -3,16 +3,15 @@
 <head>
   <title>Simple Webpage</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Caveat&display=swap');
 	@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
+	@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
 
     body {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-family: 'Indie Flower', cursive;
+	  font-family: 'Poppins', sans-serif;
       background-color: #fff7d9;
     }
     
@@ -23,7 +22,6 @@
       resize: both;
       border-radius: 8px; /* Round the corners of the textarea */
       font-family: 'Poppins', sans-serif;
-	  /* font-family: 'Indie Flower', cursive;  */
 	  font-size: 18px;
       font-weight: bold;
 	  padding: 10px; /* Add padding to the input box */
@@ -49,6 +47,17 @@
     img.logo {
       height: 100px;
     }
+	
+	#preview {
+	  font-family: 'Source Code Pro', monospace; 
+	  white-space: pre;
+	  font-size: 80%;
+	  padding: 20px;
+	  background-color: #f8f8f8; /* Slightly lighter background color */
+	  margin: 10px;
+	  display: none; 
+	}
+
   </style>
   <script>
 
@@ -74,26 +83,32 @@
 	  return { [alias]: hac };
 	}
 
-    async function postData(inputData) {
+
+    async function postData(deal) {
       const response = await fetch('https://kpos.uk/deal/write/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ inputText: inputData }) // Send the processed data as JSON
-      });
-      const responseData = await response.text();
-      console.log(responseData);
+        body: JSON.stringify({ deal }) // Send the processed data as JSON
+      })
+	  return await response.text()
     }
 
-    function handleClick() {
-      const inputText = document.getElementById('myInput').value;
-      const processedData = parseKatomic(inputText); // Preprocess the data
-      postData(processedData); // Pass the processed data to the postData function
+    async function handleClick() {
+      const katomicScript = document.getElementById('myInput').value;
+      const processedData = parseKatomic(katomicScript); // Preprocess the data
+	  try {
+		const responseData = await postData(processedData);
+		console.log(responseData);
+		const previewDiv = document.getElementById('preview');
+		previewDiv.innerText = responseData; // Update the div with the response data
+		previewDiv.style.display = 'block';
+	  } catch (error) {
+		console.error(error);
+	  }
+  
     }
-
-
-
 
 
 /*
@@ -104,11 +119,14 @@ $data = json_decode($jsonData, true);
 echo "JSON data received:\n";
 print_r($data);
 */
+
   </script>
 </head>
 <body>
   <img src="logo.png" alt="Logo" class="logo">
   <textarea id="myInput" placeholder="Enter your text"></textarea>
-  <button onclick="handleClick()">Click Me</button>
+  <button onclick="handleClick()">Preview</button>
+  
+  <div id='preview'></div>
 </body>
 </html>
