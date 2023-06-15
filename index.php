@@ -17,7 +17,8 @@
     
     textarea {
       padding: 10px;
-      width: 200px;
+	  width: 70%;
+	  max-width: 500px;
       height: 8em;
       resize: both;
       border-radius: 8px; /* Round the corners of the textarea */
