@@ -13,6 +13,7 @@
       justify-content: center;
 	  font-family: 'Poppins', sans-serif;
       background-color: #fff7d9;
+	  
     }
     
     textarea {
@@ -47,7 +48,12 @@
     
     img.logo {
       height: 100px;
+	  margin: 10px; 
     }
+	
+	.logo-text {
+		margin: 10px; 
+	}
 	
 	#preview {
 	  font-family: 'Source Code Pro', monospace; 
@@ -125,7 +131,8 @@ print_r($data);
 </head>
 <body>
   <img src="logo.png" alt="Logo" class="logo">
-  <textarea id="myInput" placeholder="Enter your text"></textarea>
+  <div class="logo-text"> <strong>Kato</strong> is <strong>#katomic</strong></div>
+  <textarea id="myInput" placeholder="Enter some #katomic script\neg Alice is 0.0.12345"></textarea>
   <button onclick="handleClick()">Preview</button>
   
   <div id='preview'></div>
