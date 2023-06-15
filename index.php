@@ -104,6 +104,7 @@
 
     async function handleClick() {
       const katomicScript = document.getElementById('myInput').value;
+
       const processedData = parseKatomic(katomicScript); // Preprocess the data
 	  try {
 		const responseData = await postData(processedData);
@@ -111,6 +112,12 @@
 		const previewDiv = document.getElementById('preview');
 		previewDiv.innerText = responseData; // Update the div with the response data
 		previewDiv.style.display = 'block';
+		
+		// Update the URL in the address bar
+		const url = new URL(window.location.href);
+		url.searchParams.set('kscript', katomicScript);
+		history.replaceState(null, '', url.toString());
+	
 	  } catch (error) {
 		console.error(error);
 	  }
@@ -132,9 +139,21 @@ print_r($data);
 <body>
   <img src="logo.png" alt="Logo" class="logo">
   <div class="logo-text"> <strong>Kato</strong> is <strong>#katomic</strong></div>
-  <textarea id="myInput" placeholder="Enter some #katomic script\neg Alice is 0.0.12345"></textarea>
+  <textarea id="myInput" placeholder="Enter some #katomic script"></textarea>
   <button onclick="handleClick()">Preview</button>
   
   <div id='preview'></div>
 </body>
 </html>
+
+<script>
+
+	// Get the URL parameter value
+	const urlParams = new URLSearchParams(window.location.search);
+	const katomicValue = urlParams.get('kscript');
+
+	// Set the value of the textarea
+	const textarea = document.getElementById('myInput');
+	textarea.value = katomicValue;
+
+</script>
