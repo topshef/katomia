@@ -39,6 +39,7 @@
 	  font-family: 'Poppins', sans-serif; /* Switch the font to Poppins */
       border-radius: 8px; /* Round the corners of the button */
       transition: background-color 0.3s, transform 0.3s; /* Add a transition effect */
+	  white-space: nowrap
     }
 
     button:hover {
@@ -65,9 +66,62 @@
 	  display: none; 
 	}
 
-  </style>
-  <script>
+   a {
+      text-decoration: none;
+    }
+	
+  
+  #buttonsContainer {
+	  display: flex;
+	  gap: 10px; /* Add gap between buttons */
+	  flex-wrap: nowrap; /* Prevent buttons from wrapping */
+	  align-items: center; 
+	}
 
+  
+
+  </style>
+</head>
+<body>
+  <img src="logo.png" alt="Logo" class="logo">
+  <div class="logo-text"> <strong>Kato</strong> is <strong>#katomic</strong></div>
+  <textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
+  
+  <div id='buttonsContainer'>
+	  <button id='btnPreview'>Preview</button> 
+	  <button id='btnCopyPermalink'>Copy permalink</button>
+	  <button id='btnSave'>Save</button> 
+  </div>
+  <div id='bannerNotice'></div>
+  
+  <div id='preview'></div>
+</body>
+</html>
+
+
+<script>
+
+
+	//https://manytools.org/hacker-tools/ascii-banner/
+	
+	// ┌─┐┬─┐┌─┐┌┐   ┬ ┬┬─┐┬    ┌─┐ ┬ ┬┌─┐┬─┐┬ ┬
+	// │ ┬├┬┘├─┤├┴┐  │ │├┬┘│    │─┼┐│ │├┤ ├┬┘└┬┘
+	// └─┘┴└─┴ ┴└─┘  └─┘┴└─┴─┘  └─┘└└─┘└─┘┴└─ ┴ 
+	// grab url query
+
+	// Get the URL parameter value
+	const urlParams = new URLSearchParams(window.location.search)
+	const katomicValue = urlParams.get('kscript')
+
+	// Set the value of the textarea
+	const textarea = document.getElementById('myInputKscript')
+	textarea.value = katomicValue
+
+	// ┌─┐┌─┐┬─┐┌─┐┌─┐  ┬┌─┌─┐┌┬┐┌─┐┌┬┐┬┌─┐  ┌─┐┌─┐┬─┐┬┌─┐┌┬┐
+	// ├─┘├─┤├┬┘└─┐├┤   ├┴┐├─┤ │ │ ││││││    └─┐│  ├┬┘│├─┘ │ 
+	// ┴  ┴ ┴┴└─└─┘└─┘  ┴ ┴┴ ┴ ┴ └─┘┴ ┴┴└─┘  └─┘└─┘┴└─┴┴   ┴ 
+	// parse katomic script
+	
     function parseKatomic(data) {
 	  const lines = data.split('\n')
 	  const alias = [];
@@ -91,7 +145,59 @@
 	}
 
 
-    async function postData(deal) {
+
+	// ┌─┐┬─┐┌─┐┬  ┬┬┌─┐┬ ┬  ┌┬┐┌─┐┌┬┐┌─┐
+	// ├─┘├┬┘├┤ └┐┌┘│├┤ │││   ││├─┤ │ ├─┤
+	// ┴  ┴└─└─┘ └┘ ┴└─┘└┴┘  ─┴┘┴ ┴ ┴ ┴ ┴
+	// preview data
+
+	document.getElementById('btnPreview').addEventListener('click', handlePreview);
+
+    async function handlePreview() {
+      const katomicScript = document.getElementById('myInputKscript').value
+      const processedData = parseKatomic(katomicScript)
+	  
+	  const previewDiv = document.getElementById('preview')
+	  previewDiv.innerText = JSON.stringify(processedData, null, 2)
+	  previewDiv.style.display = 'block'
+	  
+	  return processedData
+    }
+
+
+	// ┌─┐┌─┐┌─┐┬ ┬  ┌─┐┌─┐┬─┐┌┬┐┌─┐┬  ┬┌┐┌┬┌─
+	// │  │ │├─┘└┬┘  ├─┘├┤ ├┬┘│││├─┤│  ││││├┴┐
+	// └─┘└─┘┴   ┴   ┴  └─┘┴└─┴ ┴┴ ┴┴─┘┴┘└┘┴ ┴
+	// copy permalink
+
+	document.getElementById('btnCopyPermalink').addEventListener('click', function() {
+
+		const katomicScript = document.getElementById('myInputKscript').value
+		
+		// Update the URL in the address bar
+		const url = new URL(window.location.href);
+		url.searchParams.set('kscript', katomicScript);
+		history.replaceState(null, '', url.toString());
+		
+		// Copy permalink to clipboard
+		navigator.clipboard.writeText(window.location.href)
+
+		document.getElementById('bannerNotice').innerHTML = '<a href="' + window.location.href + '" target="_blank">Copied!</a>'
+		//document.getElementById('copyConfirmed').style.display = 'inline'
+	})
+
+
+	// ┌─┐┌─┐┬  ┬┌─┐  ┌┬┐┌─┐┌┬┐┌─┐
+	// └─┐├─┤└┐┌┘├┤    ││├─┤ │ ├─┤
+	// └─┘┴ ┴ └┘ └─┘  ─┴┘┴ ┴ ┴ ┴ ┴
+	// save data to server via post request
+
+
+	document.getElementById('btnSave').addEventListener('click', saveData);
+
+    async function saveData() {
+	  const deal = await handlePreview()
+		
       const response = await fetch('https://kpos.uk/deal/write/', {
         method: 'POST',
         headers: {
@@ -99,61 +205,11 @@
         },
         body: JSON.stringify({ deal }) // Send the processed data as JSON
       })
-	  return await response.text()
+	  const responseText = await response.text()
+	  
+	  document.getElementById('bannerNotice').innerHTML =  responseText
+	  
     }
 
-    async function handleClick() {
-      const katomicScript = document.getElementById('myInput').value;
-
-      const processedData = parseKatomic(katomicScript); // Preprocess the data
-	  try {
-		const responseData = await postData(processedData);
-		console.log(responseData);
-		const previewDiv = document.getElementById('preview');
-		previewDiv.innerText = responseData; // Update the div with the response data
-		previewDiv.style.display = 'block';
-		
-		// Update the URL in the address bar
-		const url = new URL(window.location.href);
-		url.searchParams.set('kscript', katomicScript);
-		history.replaceState(null, '', url.toString());
 	
-	  } catch (error) {
-		console.error(error);
-	  }
-  
-    }
-
-
-/*
-server test with php
-$jsonData = file_get_contents("php://input");
-$data = json_decode($jsonData, true);
-
-echo "JSON data received:\n";
-print_r($data);
-*/
-
-  </script>
-</head>
-<body>
-  <img src="logo.png" alt="Logo" class="logo">
-  <div class="logo-text"> <strong>Kato</strong> is <strong>#katomic</strong></div>
-  <textarea id="myInput" placeholder="Enter some #katomic script"></textarea>
-  <button onclick="handleClick()">Preview</button>
-  
-  <div id='preview'></div>
-</body>
-</html>
-
-<script>
-
-	// Get the URL parameter value
-	const urlParams = new URLSearchParams(window.location.search);
-	const katomicValue = urlParams.get('kscript');
-
-	// Set the value of the textarea
-	const textarea = document.getElementById('myInput');
-	textarea.value = katomicValue;
-
 </script>
