@@ -26,7 +26,3 @@
   <script src="katomic.js"></script>
 </body>
 </html>
-
-
-
-

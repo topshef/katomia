@@ -24,12 +24,13 @@
 	  const lines = data.split('\n')
 	  const alias = [];
       lines.forEach(line => {
+		  
         const result = detectAlias(line)
-        if (result) {
-          alias.push(result)
-        }
+		if (result) alias.push(result)
+
+
       })
-      return {alias, lines} 
+      return {alias, lines, userInput: data} 
     }
 
 	//todo build in account check using 5 char checksum HIP15 #1
