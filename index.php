@@ -8,9 +8,11 @@
 
 </head>
 <body>
-  <img src="logo.png" alt="Logo" class="logo">
-  <div class="logo-text"> <strong>Kato</strong> is <strong>#katomic</strong></div>
-  <textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
+  <!-- <header> -->
+	  <img src="logo.png" alt="Logo" class="logo">
+	  <div class="logo-text"> <strong>Kato</strong> is <strong>#katomic</strong></div>
+	  <textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
+  <!-- </header> -->
   
   <div id='buttonsContainer'>
 	  <button id='btnPreview'>Preview</button> 
@@ -20,9 +22,11 @@
   <div id='bannerNotice'></div>
   
   <div id='preview'></div>
+  
+  <script src="katomic.js"></script>
 </body>
 </html>
 
 
-<script src="katomic.js"></script>
+
 
