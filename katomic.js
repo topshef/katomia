@@ -22,23 +22,48 @@
 	
     function parseKatomic(data) {
 	  const lines = data.split('\n')
-	  const alias = [];
+	  const alias = []
+	  const addTokenTransfer = []
+	  let result
       // lines.forEach(line => {
 	  const pendingLines = lines.filter(line => {
 		  
-        const result = detectAlias(line)
+        result = detectAlias(line)
 		if (result) {
 			alias.push(result)
 			return false
 		}
 
+
+		result = detectTransferFT(line)
+		if (result) {
+			addTokenTransfer.push(result)
+			return false
+		}
 		// alias.push({[line]: `no alias found on this line: ${line}`})
 
 		return true
       })
 	  
-      return {alias, pendingLines, userInput: data} 
+      return {alias, addTokenTransfer, pendingLines, userInput: data} 
     }
+
+	function detectTransferFT(line) {
+		const pattern = /^(\w+) (receives|sends) ([0-9.]+) (\w+)$/
+		const matches = line.match(pattern)
+		if (!matches) return false
+		
+		// one way..
+		const [txt, subject, verb, amount, unit] = matches
+		return {txt, subject, verb, amount, unit}
+		
+		// another way..
+		// similar to php array_combine
+		// const keys = ['txt', 'subject', 'verb', 'amount', 'unit']
+		// const matchesObject = Object.fromEntries(keys.map((k, i) => [k, matches[i]]))
+		// return matchesObject
+
+	}
 
 	//todo build in account check using 5 char checksum HIP15 #1
 	function detectAlias(line) {
