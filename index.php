@@ -2,6 +2,9 @@
 <html>
 <head>
   <title>Simple Webpage</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
 	@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
 	@import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro&display=swap');
@@ -33,7 +36,7 @@
     button {
       padding: 10px 20px;
       margin-top: 10px;
-      border: none;
+      border: 1px solid grey;
       background-color: #e9e9e9;
       cursor: pointer;
 	  font-family: 'Poppins', sans-serif; /* Switch the font to Poppins */
@@ -45,6 +48,7 @@
     button:hover {
       background-color: #f5f5f5; /* Lighten the background color when hovering */
       transform: scale(1.05); /* Add a slight scaling effect when hovering */
+	  border: 2px solid grey;
     }
     
     img.logo {
@@ -80,7 +84,7 @@
 
   
 
-  </style>
+</style>
 </head>
 <body>
   <img src="logo.png" alt="Logo" class="logo">
@@ -183,7 +187,7 @@
 		// Copy permalink to clipboard
 		navigator.clipboard.writeText(window.location.href)
 
-		document.getElementById('bannerNotice').innerHTML = '<a href="' + window.location.href + '" target="_blank">An offline permalink was copied to clipboard</a>'
+		document.getElementById('bannerNotice').innerHTML = '<a href="' + window.location.href + '" target="_blank">A permalink has been copied to clipboard</a>'
 		//document.getElementById('copyConfirmed').style.display = 'inline'
 	})
 
