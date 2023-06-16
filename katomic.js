@@ -23,14 +23,21 @@
     function parseKatomic(data) {
 	  const lines = data.split('\n')
 	  const alias = [];
-      lines.forEach(line => {
+      // lines.forEach(line => {
+	  const pendingLines = lines.filter(line => {
 		  
         const result = detectAlias(line)
-		if (result) alias.push(result)
+		if (result) {
+			alias.push(result)
+			return false
+		}
 
+		// alias.push({[line]: `no alias found on this line: ${line}`})
 
+		return true
       })
-      return {alias, lines, userInput: data} 
+	  
+      return {alias, pendingLines, userInput: data} 
     }
 
 	//todo build in account check using 5 char checksum HIP15 #1
