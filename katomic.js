@@ -25,11 +25,21 @@
 	  const alias = {}
 	  const addHbarTransfer = []
 	  const addTokenTransfer = []
+	  const comments = []
 	  
 	  let result
       // lines.forEach(line => {
 	  const pendingLines = lines.filter(line => {
 
+
+		if (line.trim() === '') return false // drop empty lines
+		
+		result = detectComment(line)
+		if (result) {
+			comments.push(line)
+			return false
+		}
+		
         result = detectAlias(line)
 		if (result) {
 			Object.assign(alias, result)
@@ -56,8 +66,17 @@
 		return true
       })
 	  
-      return {alias, addHbarTransfer, addTokenTransfer, pendingLines, userInput: data} 
+      return {alias, addHbarTransfer, addTokenTransfer, pendingLines, comments, userInput: data} 
     }
+
+	// ignore comment lines
+	function detectComment(line) {
+	  if (line.startsWith('#')) return true;
+	  if (line.startsWith('//')) return true;
+	  if (line.startsWith('/*') && line.endsWith('*/')) return true;
+	  return false;
+	}
+
 
 	function detectTransferHbar(line) {
 		const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (hbar|h)$/
