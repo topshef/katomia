@@ -75,8 +75,12 @@
 		const matches = line.match(pattern)
 		if (!matches) return false
 		
-		const [_, account, verb, amount, unit] = matches
-		return {account, verb, amount, unit}
+		let [_, accountId, verb, value, tokenId] = matches
+		if (verb == 'sends') value = -1 * value 
+		
+		return {tokenId, accountId, value}
+		
+		//matching https://docs.hedera.com/hedera/sdks-and-apis/sdks/tokens/transfer-tokens
 	}
 
 	// inject known alias into line
