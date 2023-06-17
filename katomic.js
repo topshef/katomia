@@ -22,25 +22,27 @@
 	
     function parseKatomic(data) {
 	  const lines = data.split('\n')
-	  const alias = []
+	  const alias = {}
 	  const addTokenTransfer = []
 	  let result
       // lines.forEach(line => {
 	  const pendingLines = lines.filter(line => {
-		  
+
         result = detectAlias(line)
 		if (result) {
-			alias.push(result)
+			Object.assign(alias, result)
+			//alias.push(result)
 			return false
 		}
 
-
+		userInput = line
+		line = injectAlias(line, alias)
+		console.log('line is' ,line)
 		result = detectTransferFT(line)
 		if (result) {
-			addTokenTransfer.push(result)
+			addTokenTransfer.push({...result, userInput})
 			return false
 		}
-		// alias.push({[line]: `no alias found on this line: ${line}`})
 
 		return true
       })
@@ -49,13 +51,13 @@
     }
 
 	function detectTransferFT(line) {
-		const pattern = /^(\w+) (receives|sends) ([0-9.]+) (\w+)$/
+		const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\w+)$/
 		const matches = line.match(pattern)
 		if (!matches) return false
 		
 		// one way..
-		const [txt, subject, verb, amount, unit] = matches
-		return {txt, subject, verb, amount, unit}
+		const [_, account, verb, amount, unit] = matches
+		return {account, verb, amount, unit}
 		
 		// another way..
 		// similar to php array_combine
@@ -63,6 +65,15 @@
 		// const matchesObject = Object.fromEntries(keys.map((k, i) => [k, matches[i]]))
 		// return matchesObject
 
+	}
+
+	// inject known alias into line
+	function injectAlias(line, aliases) {
+		let pattern = /^([a-zA-Z0-9\.]+)\s+(sends|receives)\s+(.+)$/;
+		if (!pattern.test(line)) return line;
+		for (let alias in aliases) 
+			line = line.replace(new RegExp(alias, 'g'), aliases[alias]);
+		return line;
 	}
 
 	//todo build in account check using 5 char checksum HIP15 #1
