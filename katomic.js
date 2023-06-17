@@ -236,3 +236,23 @@
 	  
     }
 
+
+
+
+	//placeholder.. templates
+    var dropdown = document.getElementById("kscriptTemplateOptions");
+    var myInputKscript = document.getElementById("myInputKscript");
+
+    dropdown.addEventListener("change", function() {
+      var selectedOption = dropdown.value;
+
+      if (myInputKscript.value.trim() !== "") {
+        var confirmOverwrite = confirm("There's already a value. Do you want to overwrite it?");
+        if (!confirmOverwrite) {
+          dropdown.value = ""; // Reset the dropdown to the default option
+          return; // Exit the event listener
+        }
+      }
+
+      myInputKscript.value = selectedOption;
+	})

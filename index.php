@@ -16,8 +16,18 @@
   <!-- <header> -->
 	  <img src="logo.png" alt="Logo" class="logo">
 	  <div class="logo-text"> <strong>Kato</strong> is <strong>#katomic</strong></div>
-	  <textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
   <!-- </header> -->
+  
+	  <label for="options">Choose an option:</label>
+	  <select id="kscriptTemplateOptions">
+		<option value="">Select an option</option>
+		<option value="Option 1">Option 1</option>
+		<option value="Option 2">Option 2</option>
+		<option value="Option 3">Option 3</option>
+	  </select>
+	  
+	  <textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
+
   
   <div id='buttonsContainer'>
 	  <button id='btnPreview'>Preview</button> 
