@@ -23,7 +23,9 @@
     function parseKatomic(data) {
 	  const lines = data.split('\n')
 	  const alias = {}
+	  const addHbarTransfer = []
 	  const addTokenTransfer = []
+	  
 	  let result
       // lines.forEach(line => {
 	  const pendingLines = lines.filter(line => {
@@ -37,7 +39,14 @@
 
 		userInput = line
 		line = injectAlias(line, alias)
-		console.log('line is' ,line)
+		//console.log('line is' ,line)
+		
+		result = detectTransferHbar(line)
+		if (result) {
+			addHbarTransfer.push({...result, userInput})
+			return false
+		}
+		
 		result = detectTransferFT(line)
 		if (result) {
 			addTokenTransfer.push({...result, userInput})
@@ -47,24 +56,25 @@
 		return true
       })
 	  
-      return {alias, addTokenTransfer, pendingLines, userInput: data} 
+      return {alias, addHbarTransfer, addTokenTransfer, pendingLines, userInput: data} 
     }
 
-	function detectTransferFT(line) {
-		const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\w+)$/
+	function detectTransferHbar(line) {
+		const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (hbar|h)$/
 		const matches = line.match(pattern)
 		if (!matches) return false
 		
-		// one way..
 		const [_, account, verb, amount, unit] = matches
 		return {account, verb, amount, unit}
+	}
+	
+	function detectTransferFT(line) {
+		const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
+		const matches = line.match(pattern)
+		if (!matches) return false
 		
-		// another way..
-		// similar to php array_combine
-		// const keys = ['txt', 'subject', 'verb', 'amount', 'unit']
-		// const matchesObject = Object.fromEntries(keys.map((k, i) => [k, matches[i]]))
-		// return matchesObject
-
+		const [_, account, verb, amount, unit] = matches
+		return {account, verb, amount, unit}
 	}
 
 	// inject known alias into line
