@@ -1,7 +1,7 @@
 
 
 	//https://manytools.org/hacker-tools/ascii-banner/
-	
+
 	// ┌─┐┬─┐┌─┐┌┐   ┬ ┬┬─┐┬    ┌─┐ ┬ ┬┌─┐┬─┐┬ ┬
 	// │ ┬├┬┘├─┤├┴┐  │ │├┬┘│    │─┼┐│ │├┤ ├┬┘└┬┘
 	// └─┘┴└─┴ ┴└─┘  └─┘┴└─┴─┘  └─┘└└─┘└─┘┴└─ ┴ 
@@ -114,6 +114,8 @@
 	  previewDiv.style.display = 'block'
 	  
 	  document.getElementById('bannerNotice').innerHTML = 'Preview updated:'
+	  //hljs.highlightElement(document.getElementById('preview'));
+
 	  return processedData
     }
 
@@ -163,3 +165,4 @@
 	  document.getElementById('bannerNotice').innerHTML =  responseText
 	  
     }
+
