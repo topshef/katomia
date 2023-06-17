@@ -81,6 +81,26 @@
 		
 		return true
       })
+
+
+
+/* to consider later for refactor
+let detectionFuncs = [
+    {func: detectComment, action: (line) => comments.push(line)},
+    {func: detectNetwork, action: (result) => {network = result}},
+    {func: detectAlias, action: (result) => {Object.assign(alias, result)}}
+];
+
+for(let i = 0; i < detectionFuncs.length; i++) {
+    result = detectionFuncs[i].func(line);
+    if (result) {
+        detectionFuncs[i].action(result);
+        return false;
+    }
+}
+
+
+*/
 	  
       return {network, alias, addHbarTransfer, addTokenTransfer, addNftTransfer, pendingLines, comments, userInput: data} 
     }
