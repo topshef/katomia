@@ -25,6 +25,7 @@
 	  const alias = {}
 	  const addHbarTransfer = []
 	  const addTokenTransfer = []
+	  const addNftTransfer = []
 	  const comments = []
 	  
 	  let result
@@ -49,7 +50,8 @@
 
 		userInput = line
 		line = injectAlias(line, alias)
-		//console.log('line is' ,line)
+		console.log('line is' ,line)
+		
 		
 		result = detectTransferHbar(line)
 		if (result) {
@@ -63,10 +65,17 @@
 			return false
 		}
 
+
+		result = detectTransferNFT(line)
+		if (result) {
+			addNftTransfer.push({...result, userInput})
+			return false
+		}
+		
 		return true
       })
 	  
-      return {alias, addHbarTransfer, addTokenTransfer, pendingLines, comments, userInput: data} 
+      return {alias, addHbarTransfer, addTokenTransfer, addNftTransfer, pendingLines, comments, userInput: data} 
     }
 
 	// ignore comment lines
@@ -102,6 +111,18 @@
 		//matching https://docs.hedera.com/hedera/sdks-and-apis/sdks/tokens/transfer-tokens
 	}
 
+	function detectTransferNFT(line) {
+		const pattern = /^(\d+\.\d+\.\d+) sends NFT (\d+\.\d+\.\d+)-(\d+) to (\d+\.\d+\.\d+)$/
+		const matches = line.match(pattern)
+		if (!matches) return false
+		
+		const [_, sender, tokenId, serial, receiver] = matches
+		
+		return {sender, tokenId, serial, receiver}
+		
+		//matching https://docs.hedera.com/hedera/sdks-and-apis/sdks/tokens/transfer-tokens
+	}
+	
 	// inject known alias into line
 	function injectAlias(line, aliases) {
 		let pattern = /^([a-zA-Z0-9\.]+)\s+(sends|receives)\s+(.+)$/;
