@@ -23,6 +23,7 @@
     function parseKatomic(data) {
 	  const lines = data.split('\n')
 	  const alias = {}
+	  let network
 	  const addHbarTransfer = []
 	  const addTokenTransfer = []
 	  const addNftTransfer = []
@@ -38,6 +39,12 @@
 		result = detectComment(line)
 		if (result) {
 			comments.push(line)
+			return false
+		}
+		
+        result = detectNetwork(line)
+		if (result) {
+			network = result
 			return false
 		}
 		
@@ -75,7 +82,7 @@
 		return true
       })
 	  
-      return {alias, addHbarTransfer, addTokenTransfer, addNftTransfer, pendingLines, comments, userInput: data} 
+      return {network, alias, addHbarTransfer, addTokenTransfer, addNftTransfer, pendingLines, comments, userInput: data} 
     }
 
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┌┬┐┌┬┐┌─┐┌┐┌┌┬┐
@@ -87,6 +94,19 @@
 	  if (line.startsWith('//')) return true;
 	  if (line.startsWith('/*') && line.endsWith('*/')) return true;
 	  return false;
+	}
+
+
+	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌┐┌┌─┐┌┬┐┬ ┬┌─┐┬─┐┬┌─
+	 // ││├┤  │ ├┤ │   │   │││├┤  │ ││││ │├┬┘├┴┐
+	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   ┘└┘└─┘ ┴ └┴┘└─┘┴└─┴ ┴
+	// detect network
+	function detectNetwork(line) {
+	  const pattern = /we are on (\w+net)/
+	  const match = line.match(pattern)
+	  
+	  if (match) return match[1]
+	  return false
 	}
 
 
