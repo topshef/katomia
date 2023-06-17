@@ -64,8 +64,10 @@
 		const matches = line.match(pattern)
 		if (!matches) return false
 		
-		const [_, account, verb, amount, unit] = matches
-		return {account, verb, amount, unit}
+		let [_, accountId, verb, value, unit] = matches
+		if (verb == 'sends') value = -1 * value 
+		
+		return {accountId, value}
 	}
 	
 	function detectTransferFT(line) {
