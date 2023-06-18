@@ -27,6 +27,7 @@
 	  const addHbarTransfer = []
 	  const addTokenTransfer = []
 	  const addNftTransfer = []
+	  const display = {} // optional: title, description, thumbnail, button label
 	  const comments = []
 	  
 	  let result
@@ -48,6 +49,13 @@
 			return false
 		}
 		
+        result = detectDisplayParameter(line)
+		if (result) {
+			//display.push(result)
+			Object.assign(display, result)
+			return false
+		}
+
         result = detectAlias(line)
 		if (result) {
 			Object.assign(alias, result)
@@ -102,7 +110,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 */
 	  
-      return {network, alias, addHbarTransfer, addTokenTransfer, addNftTransfer, pendingLines, comments, userInput: data} 
+      return {network, display, alias, addHbarTransfer, addTokenTransfer, addNftTransfer, pendingLines, comments, userInput: data} 
     }
 
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┌┬┐┌┬┐┌─┐┌┐┌┌┬┐
@@ -126,6 +134,25 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  const match = line.match(pattern)
 	  
 	  if (match) return match[1]
+	  return false
+	}
+
+
+	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌┬┐┬┌─┐┌─┐┬  ┌─┐┬ ┬  ┌─┐┌─┐┬─┐┌─┐┌┬┐┌─┐┌┬┐┌─┐┬─┐┌─┐
+	 // ││├┤  │ ├┤ │   │    │││└─┐├─┘│  ├─┤└┬┘  ├─┘├─┤├┬┘├─┤│││├┤  │ ├┤ ├┬┘└─┐
+	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   ─┴┘┴└─┘┴  ┴─┘┴ ┴ ┴   ┴  ┴ ┴┴└─┴ ┴┴ ┴└─┘ ┴ └─┘┴└─└─┘
+	// detect display parameters
+
+	function detectDisplayParameter(line) {
+	  //const regex = /display\s+(\w+)\s+(.+)/;
+      const regex = /display\s+(title|description|thumbnail|button)\s+(.+)/
+	  const matches = line.match(regex)
+
+	  if (matches) {
+		const [, field, value] = matches
+		return { [field]: value }
+	  }
+
 	  return false
 	}
 
@@ -235,8 +262,10 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// └─┘└─┘┴   ┴   ┴  └─┘┴└─┴ ┴┴ ┴┴─┘┴┘└┘┴ ┴
 	// copy permalink
 
-	document.getElementById('btnCopyPermalink').addEventListener('click', function() {
+	document.getElementById('btnCopyPermalink').addEventListener('click', copyPermalink)
 
+	async function copyPermalink() {
+		const deal = await handlePreview() // refresh preview
 		const katomicScript = document.getElementById('myInputKscript').value
 		
 		// Update the URL in the address bar
@@ -249,18 +278,17 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 		document.getElementById('bannerNotice').innerHTML = '<a href="' + window.location.href + '" target="_blank">A permalink has been copied to clipboard</a>'
 		//document.getElementById('copyConfirmed').style.display = 'inline'
-	})
+	}
 
 
-	// ┌─┐┌─┐┬  ┬┌─┐  ┌┬┐┌─┐┌┬┐┌─┐
-	// └─┐├─┤└┐┌┘├┤    ││├─┤ │ ├─┤
-	// └─┘┴ ┴ └┘ └─┘  ─┴┘┴ ┴ ┴ ┴ ┴
-	// save data to server via post request
+	// ┌─┐┬ ┬┌┐ ┬  ┬┌─┐┬ ┬  ┬┌─┌─┐┌┬┐┌─┐┌┬┐┬┌─┐  ┌─┐┌─┐┬─┐┬┌─┐┌┬┐
+	// ├─┘│ │├┴┐│  │└─┐├─┤  ├┴┐├─┤ │ │ ││││││    └─┐│  ├┬┘│├─┘ │ 
+	// ┴  └─┘└─┘┴─┘┴└─┘┴ ┴  ┴ ┴┴ ┴ ┴ └─┘┴ ┴┴└─┘  └─┘└─┘┴└─┴┴   ┴ 
+	// publish katomic script
 
+	document.getElementById('btnPublish').addEventListener('click', publishData)
 
-	document.getElementById('btnSave').addEventListener('click', saveData);
-
-    async function saveData() {
+    async function publishData() {
 	  const deal = await handlePreview()
 		
       const response = await fetch('https://kpos.uk/deal/write/', {
@@ -268,15 +296,13 @@ for(let i = 0; i < detectionFuncs.length; i++) {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ deal }) // Send the processed data as JSON
+        body: JSON.stringify(deal) // Send the processed data as JSON
       })
 	  const responseText = await response.text()
 	  
 	  document.getElementById('bannerNotice').innerHTML =  responseText
 	  
     }
-
-
 
 
 	//placeholder.. templates

@@ -34,7 +34,7 @@
   <div id='buttonsContainer'>
 	  <button id='btnPreview'>Preview</button> 
 	  <button id='btnCopyPermalink'>Copy permalink</button>
-	  <button id='btnSave'>Save</button> 
+	  <button id='btnPublish'>Publish</button> 
   </div>
   <div id='bannerNotice'></div>
   
