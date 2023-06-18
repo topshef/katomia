@@ -250,6 +250,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  previewDiv.innerText = JSON.stringify(processedData, null, 2)
 	  previewDiv.style.display = 'block'
 	  
+	  updateKatomicURL() // update the URL so it can be bookmarked or copied
+	  
 	  document.getElementById('bannerNotice').innerHTML = 'Preview updated:'
 	  //hljs.highlightElement(document.getElementById('preview'));
 
@@ -276,18 +278,22 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 	async function copyPermalink() {
 		const deal = await handlePreview() // refresh preview
-		const katomicScript = document.getElementById('myInputKscript').value
 		
-		// Update the URL in the address bar
-		const url = new URL(window.location.href);
-		url.searchParams.set('kscript', katomicScript);
-		history.replaceState(null, '', url.toString());
+		updateKatomicURL() // Update the URL in the address bar
 		
 		// Copy permalink to clipboard
 		navigator.clipboard.writeText(window.location.href)
 
 		document.getElementById('bannerNotice').innerHTML = '<a href="' + window.location.href + '" target="_blank">A permalink has been copied to clipboard</a>'
-		//document.getElementById('copyConfirmed').style.display = 'inline'
+	}
+
+
+	function updateKatomicURL() {
+	  // Update the URL in the address bar
+	  const katomicScript = document.getElementById('myInputKscript').value
+	  const url = new URL(window.location.href);
+	  url.searchParams.set('kscript', katomicScript);
+	  history.replaceState(null, '', url.toString());
 	}
 
 
@@ -300,7 +306,14 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
     async function publishData() {
 	  const deal = await handlePreview()
-		
+	  if (deal.pendingLines.length !== 0) {
+		const pending = deal.pendingLines.join('<br>');
+
+		document.getElementById('bannerNotice').innerHTML = `Some lines were not understood - please check:<BR>${pending}`  
+	    return
+	  }
+	  
+	  
       const response = await fetch('https://kpos.uk/deal/write/', {
         method: 'POST',
         headers: {
