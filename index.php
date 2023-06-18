@@ -32,8 +32,8 @@
 
   
   <div id='buttonsContainer'>
+	  <div id='btnCopyPermalink' data-tooltip="Copy to Clipboard">Copy permalink</div>
 	  <button id='btnPreview'>Preview</button> 
-	  <button id='btnCopyPermalink'>Copy permalink</button>
 	  <button id='btnPublish'>Publish</button> 
   </div>
   <div id='bannerNotice'></div>
