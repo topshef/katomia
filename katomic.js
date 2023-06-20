@@ -354,7 +354,10 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	 
 	document.getElementById('btnClear').addEventListener('click', function() {
 		 var confirmAction = confirm("Start a new script?")
-		 if (confirmAction) document.getElementById("myInputKscript").value = ''
+		 if (confirmAction) {
+			 document.getElementById("myInputKscript").value = ''
+			updateKatomicURL()
+		 }
 		 return
 	})
 
