@@ -354,6 +354,18 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		return true
 	}
 	
+	// ┬ ┬┌─┐┬  ┌─┐  ┬ ┬┌─┐┬─┐┌─┐┌─┐
+	// ├─┤├┤ │  ├─┘  ├─┤├┤ ├┬┘├┤  ┌┘
+	// ┴ ┴└─┘┴─┘┴    ┴ ┴└─┘┴└─└─┘ o 
+	// later maybe give warning if any accounts are not token associated as needed, and/or don't have funds
+	// follow-up for volunteer to learn/demo knowledge of mirror nodes
+	// maybe attach this to a separate button, and/or use it on marketplaces
+			
+	async function isDealExecutableNow(deal) {
+		// insert checks here
+		
+		return true
+	}
 	
 	// ┌─┐┬ ┬┌┐ ┬  ┬┌─┐┬ ┬  ┬┌─┌─┐┌┬┐┌─┐┌┬┐┬┌─┐  ┌─┐┌─┐┬─┐┬┌─┐┌┬┐
 	// ├─┘│ │├┴┐│  │└─┐├─┤  ├┴┐├─┤ │ │ ││││││    └─┐│  ├┬┘│├─┘ │ 
@@ -368,15 +380,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	 //check transfers
 	 const isValid = await verifyData(deal)
 	  if (!isValid) return
-	  
-		// ┬ ┬┌─┐┬  ┌─┐  ┬ ┬┌─┐┬─┐┌─┐┌─┐
-		// ├─┤├┤ │  ├─┘  ├─┤├┤ ├┬┘├┤  ┌┘
-		// ┴ ┴└─┘┴─┘┴    ┴ ┴└─┘┴└─└─┘ o 
-		// later maybe give warning if any accounts are not token associated as needed, and/or don't have funds
-		// follow-up for volunteer to learn/demo knowledge of mirror nodes
-		
-		
-	  
+	  	   
       const response = await fetch('https://kpos.uk/deal/write/', {
         method: 'POST',
         headers: {
