@@ -346,6 +346,20 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 
 
+
+	// ┌┬┐┬─┐┌─┐┌─┐┬ ┬
+	 // │ ├┬┘├─┤└─┐├─┤
+	 // ┴ ┴└─┴ ┴└─┘┴ ┴
+	 // trash
+	 
+	document.getElementById('btnClear').addEventListener('click', function() {
+		 var confirmAction = confirm("Start a new script?")
+		 if (confirmAction) document.getElementById("myInputKscript").value = ''
+		 return
+	})
+
+
+
 	//placeholder.. templates
     var dropdown = document.getElementById("kscriptTemplateOptions");
     var myInputKscript = document.getElementById("myInputKscript");

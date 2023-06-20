@@ -34,6 +34,7 @@
   <div id='buttonsContainer'>
 <!--    <div class='tooltip' data-tooltip="Give feedback!"><a href='http://feedback.katomic.org' target='_blank'><img src='feedback.png' height='25px'></a></div> 
 might be confused with give feedback on the script-->
+	  <div id='btnClear' class='tooltip' data-tooltip="Clear"><img src='trash.png' height="18px" style="padding-right: 10px"></div>
 	  <div id='btnCopyPermalink' class='tooltip' data-tooltip="Copy to Clipboard">Copy permalink</div>
 	  <button id='btnPreview'>Preview</button> 
 	  <button id='btnPublish'>Publish</button> 
@@ -42,6 +43,8 @@ might be confused with give feedback on the script-->
   
   <div id='preview'></div>
   
-  <script src="katomic.js"></script>
+  <!-- <script src="katomic.js"></script> --> 
+  <script src="katomic.js<?php echo '?v=' . filemtime('katomic.js'); ?>"></script>
+
 </body>
 </html>
