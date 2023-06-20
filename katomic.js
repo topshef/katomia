@@ -23,7 +23,7 @@
     function parseKatomic(data) {
 	  const lines = data.split('\n')
 	  const alias = {}
-	  let network
+	  let network =''
 	  const addHbarTransfer = []
 	  const addTokenTransfer = []
 	  const addNftTransfer = []
@@ -124,16 +124,19 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  return false;
 	}
 
-
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌┐┌┌─┐┌┬┐┬ ┬┌─┐┬─┐┬┌─
 	 // ││├┤  │ ├┤ │   │   │││├┤  │ ││││ │├┬┘├┴┐
 	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   ┘└┘└─┘ ┴ └┴┘└─┘┴└─┴ ┴
 	// detect network
 	function detectNetwork(line) {
-	  const pattern = /we are on (\w+net)/
+	  //const pattern = /we are on (\w+net)/
+	  //const pattern = /we are on (\w+net)/i;  // case insensitive
+	  //const pattern = /on (\w+net)/i
+	  const pattern = /(\w+net)\b/i
 	  const match = line.match(pattern)
 	  
-	  if (match) return match[1]
+	  //if (match) return match[1]
+	  if (match) return match[1].toLowerCase() // lower case output
 	  return false
 	}
 
@@ -257,9 +260,13 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  
 	  updateKatomicURL() // update the URL so it can be bookmarked or copied
 	  
-	  document.getElementById('bannerNotice').innerHTML = 'Preview updated:'
-	  //hljs.highlightElement(document.getElementById('preview'));
-
+     if (processedData.pendingLines.length == 0)
+		document.getElementById('bannerNotice').innerHTML = 'Preview updated ☑️'
+	 else {
+		 const pending = processedData.pendingLines.join('<br>');
+		 document.getElementById('bannerNotice').innerHTML = `⚠️ Some lines were not understood, please check:<BR>${pending}`
+		 
+	 }
 	  return processedData
     }
 
@@ -314,10 +321,15 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  if (deal.pendingLines.length !== 0) {
 		const pending = deal.pendingLines.join('<br>');
 
-		document.getElementById('bannerNotice').innerHTML = `Some lines were not understood - please check:<BR>${pending}`  
+		document.getElementById('bannerNotice').innerHTML = `⚠️ Some lines were not understood - please check:<BR>${pending}`  
 	    return
 	  }
 	  
+	  const totalTransfers = deal.addHbarTransfer.length + deal.addTokenTransfer.length + deal.addNftTransfer.length
+	  if (totalTransfers == 0) {
+		  document.getElementById('bannerNotice').innerHTML = `⚠️ No transfers found - please specify some transfers`  
+	    return
+	  }
 	  
       const response = await fetch('https://kpos.uk/deal/write/', {
         method: 'POST',

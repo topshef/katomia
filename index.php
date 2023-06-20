@@ -32,7 +32,9 @@
 
   
   <div id='buttonsContainer'>
-	  <div id='btnCopyPermalink' data-tooltip="Copy to Clipboard">Copy permalink</div>
+<!--    <div class='tooltip' data-tooltip="Give feedback!"><a href='http://feedback.katomic.org' target='_blank'><img src='feedback.png' height='25px'></a></div> 
+might be confused with give feedback on the script-->
+	  <div id='btnCopyPermalink' class='tooltip' data-tooltip="Copy to Clipboard">Copy permalink</div>
 	  <button id='btnPreview'>Preview</button> 
 	  <button id='btnPublish'>Publish</button> 
   </div>
