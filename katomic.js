@@ -252,22 +252,19 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
     async function handlePreview() {
       const katomicScript = document.getElementById('myInputKscript').value
-      const processedData = parseKatomic(katomicScript)
+      const deal = parseKatomic(katomicScript)
 	  
 	  const previewDiv = document.getElementById('preview')
-	  previewDiv.innerText = JSON.stringify(processedData, null, 2)
+	  previewDiv.innerText = JSON.stringify(deal, null, 2)
 	  previewDiv.style.display = 'block'
 	  
 	  updateKatomicURL() // update the URL so it can be bookmarked or copied
 	  
-     if (processedData.pendingLines.length == 0)
-		document.getElementById('bannerNotice').innerHTML = 'Preview updated ☑️'
-	 else {
-		 const pending = processedData.pendingLines.join('<br>');
-		 document.getElementById('bannerNotice').innerHTML = `⚠️ Some lines were not understood, please check:<BR>${pending}`
-		 
-	 }
-	  return processedData
+	 //check transfers
+	 const isValid = await verifyData(deal)
+	 if (isValid) document.getElementById('bannerNotice').innerHTML = 'Looks good! Ready to publish ☑️'
+
+	  return deal
     }
 
 
@@ -317,6 +314,13 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// check transfers
 	async function verifyData(deal) {
 	  
+		if (deal.pendingLines.length !== 0) {
+			const pending = deal.pendingLines.join('<br>');
+
+			document.getElementById('bannerNotice').innerHTML = `⚠️ Some lines were not understood - please check:<BR>${pending}`  
+			return false
+		 }
+		  
 		const totalTransfers = deal.addHbarTransfer.length + deal.addTokenTransfer.length + deal.addNftTransfer.length
 		if (totalTransfers == 0) {
 		  document.getElementById('bannerNotice').innerHTML = `⚠️ No transfers found - please specify some transfers`  
@@ -360,13 +364,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
     async function publishData() {
 	  const deal = await handlePreview()
-	  if (deal.pendingLines.length !== 0) {
-		const pending = deal.pendingLines.join('<br>');
-
-		document.getElementById('bannerNotice').innerHTML = `⚠️ Some lines were not understood - please check:<BR>${pending}`  
-	    return
-	  }
-	  
+	   
 	 //check transfers
 	 const isValid = await verifyData(deal)
 	  if (!isValid) return
