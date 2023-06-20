@@ -395,8 +395,6 @@ for(let i = 0; i < detectionFuncs.length; i++) {
     }
 
 
-
-
 	// ┌┬┐┬─┐┌─┐┌─┐┬ ┬
 	 // │ ├┬┘├─┤└─┐├─┤
 	 // ┴ ┴└─┴ ┴└─┘┴ ┴
@@ -407,26 +405,90 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		 if (confirmAction) {
 			 document.getElementById("myInputKscript").value = ''
 			updateKatomicURL()
+			
+			//reset the dropdown
+			document.getElementById("kscriptTemplateOptions").selectedIndex = 0
+			//same thing..
+			//document.getElementById("kscriptTemplateOptions").value = ''
 		 }
 		 return
-	})
+	});
 
 
-
+	// ┬┌─┌─┐┌┬┐┌─┐┌┬┐┬┌─┐  ┌┬┐┌─┐┌┬┐┌─┐┬  ┌─┐┌┬┐┌─┐┌─┐
+	// ├┴┐├─┤ │ │ ││││││     │ ├┤ │││├─┘│  ├─┤ │ ├┤ └─┐
+	// ┴ ┴┴ ┴ ┴ └─┘┴ ┴┴└─┘   ┴ └─┘┴ ┴┴  ┴─┘┴ ┴ ┴ └─┘└─┘
+	// katomic templates
+	
+	// example templates to get people going
+	// create a templates.txt file with a list of published dealId's and a label to use in the drop-down
+	// the dealId only needs to be long enough to result in a unique match when queried
+	// but the full 64 char id can be used, per HCS appnet
+	
 	//placeholder.. templates
-    var dropdown = document.getElementById("kscriptTemplateOptions");
-    var myInputKscript = document.getElementById("myInputKscript");
+	
+    let dropdown = document.getElementById("kscriptTemplateOptions")
 
     dropdown.addEventListener("change", function() {
-      var selectedOption = dropdown.value;
-
+      let selectedOption = dropdown.value
+	  let myInputKscript = document.getElementById("myInputKscript")
+	  
       if (myInputKscript.value.trim() !== "") {
-        var confirmOverwrite = confirm("There's already a value. Do you want to overwrite it?");
+        let confirmOverwrite = confirm("This will overwrite your current script, ok?")
         if (!confirmOverwrite) {
-          dropdown.value = ""; // Reset the dropdown to the default option
-          return; // Exit the event listener
+          dropdown.value = '' // Reset the dropdown to the default option
+          return // Exit the event listener
         }
       }
 
-      myInputKscript.value = selectedOption;
+      myInputKscript.value = selectedOption
 	})
+	
+	
+	
+//dev test
+if (new URLSearchParams(window.location.search).has("test")) { 
+	(async function () {
+		const zz = await getTemplateList()
+		alert(JSON.stringify(zz))
+	})()
+
+}
+
+	getTemplateList()
+	
+	async function getTemplateList() {
+	  const url = 'templates.txt'
+	  const response = await fetch(url)
+	  const text = await response.text()
+
+	  const lines = text.split('\n')
+
+	  // Select the drop-down list
+	  const select = document.getElementById('kscriptTemplateOptions')
+	  let option 
+	  
+	  for (const line of lines) {
+		const [dealId, label] = line.split(' ')
+		if (!dealId || dealId.startsWith('#') || dealId.startsWith('//')) continue
+		
+		// Create new option element
+		option = document.createElement('option')
+		option.value = dealId
+		option.text = label
+
+		// Add the option to the drop-down list
+		select.add(option)
+
+	  }
+
+	}
+
+	
+	async function getDeal(dealId) {
+		const url = `https://kpos.uk/deal/query/?dealId=${dealId}`
+		const response = await fetch(url)
+		const deal = await response.json()
+		//const userInput = data.userInput
+		return deal
+	}

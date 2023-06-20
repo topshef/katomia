@@ -18,17 +18,12 @@
 	  <div class="logo-text"> <strong>Kato</strong> is <strong>#katomic</strong></div>
   <!-- </header> -->
   
-  <!-- options on hold 
-	  <label for="options">Choose an option:</label>
-	  <select id="kscriptTemplateOptions">
-		<option value="">Select an option</option>
-		<option value="Option 1">Option 1</option>
-		<option value="Option 2">Option 2</option>
-		<option value="Option 3">Option 3</option>
-	  </select>
-	  -->
+	<select id="kscriptTemplateOptions">
+	  <option value="">Choose a template</option>
+	</select>
+
 	  
-	  <textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
+	<textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
 
   
   <div id='buttonsContainer'>

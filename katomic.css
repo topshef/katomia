@@ -115,3 +115,12 @@
   border: 1px solid grey;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
+
+
+  #kscriptTemplateOptions {
+    padding: 5px;
+	margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
