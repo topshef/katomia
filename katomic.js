@@ -429,8 +429,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	
     let dropdown = document.getElementById("kscriptTemplateOptions")
 
-    dropdown.addEventListener("change", function() {
-      let selectedOption = dropdown.value
+    dropdown.addEventListener("change", async function() {
+      let dealId = dropdown.value
 	  let myInputKscript = document.getElementById("myInputKscript")
 	  
       if (myInputKscript.value.trim() !== "") {
@@ -440,8 +440,11 @@ for(let i = 0; i < detectionFuncs.length; i++) {
           return // Exit the event listener
         }
       }
+	  
+	  let deal = await getDeal(dealId)
+      let kscript = deal.userInput ?? 'Katomic script not found (deal may pre-date Kato!)'  
+      myInputKscript.value = kscript
 
-      myInputKscript.value = selectedOption
 	})
 	
 	
@@ -469,7 +472,7 @@ if (new URLSearchParams(window.location.search).has("test")) {
 	  let option 
 	  
 	  for (const line of lines) {
-		const [dealId, label] = line.split(' ')
+		const [dealId, label] = line.split('=')
 		if (!dealId || dealId.startsWith('#') || dealId.startsWith('//')) continue
 		
 		// Create new option element
@@ -486,9 +489,19 @@ if (new URLSearchParams(window.location.search).has("test")) {
 
 	
 	async function getDeal(dealId) {
+		// fetch deal from kpos appnet
+		// either use kpos (Kpay point-of-sale) as endpoint
+		// or you can call decentralised nodes via HCS, details to be posted shortly
+		// eg HCS messages contain the deal IDs, and the operator is the node owner
+		// node owners can publish their endpoints by posting a message with the url
+		// or keep it private as they prefer (so the deal info is not public)
+		
+		// dealId is 64 chars but you can query a shorter length and a result is returned so long as the match is unique
+		// eg 79d28d5bf3ac6c867ec82a150158fc21c7976f5a911e08c6b686487376897cb0
+		// network can be added to the query parameters, but if omitted this is located automatically
+		
 		const url = `https://kpos.uk/deal/query/?dealId=${dealId}`
 		const response = await fetch(url)
-		const deal = await response.json()
-		//const userInput = data.userInput
-		return deal
+		const result = await response.json()
+		return result.deal
 	}
