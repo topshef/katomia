@@ -535,3 +535,20 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	}
 
 
+
+
+	// ┌┬┐┌─┐┬┌─┌─┐  ┬┌─┌─┐┌┬┐┌─┐  ┌┬┐┌─┐┌┐┌┌─┐┌─┐
+	// │││├─┤├┴┐├┤   ├┴┐├─┤ │ │ │   ││├─┤││││  ├┤ 
+	// ┴ ┴┴ ┴┴ ┴└─┘  ┴ ┴┴ ┴ ┴ └─┘  ─┴┘┴ ┴┘└┘└─┘└─┘
+	// make kato dance!
+
+	const logoImage = document.getElementById('logo')
+
+	logoImage.addEventListener('mouseover', function() {
+	  logoImage.src = 'kato1.png'
+	})
+
+	logoImage.addEventListener('mouseout', function() {
+	  logoImage.src = 'kato2.png'
+	})
+

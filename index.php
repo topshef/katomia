@@ -14,7 +14,7 @@
 </head>
 <body>
   <!-- <header> -->
-	  <img src="logo.png" alt="Logo" class="logo">
+	  <img id='logo' src="logo.png" alt="Kato" class="logo">
 	  <div class="logo-text"> <strong>Kato</strong> is <strong>#katomic</strong></div>
   <!-- </header> -->
   
