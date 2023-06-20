@@ -309,6 +309,48 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	}
 
 
+
+
+	// ┌─┐┬ ┬┌─┐┌─┐┬┌─  ┌┬┐┬─┐┌─┐┌┐┌┌─┐┌─┐┌─┐┬─┐┌─┐
+	// │  ├─┤├┤ │  ├┴┐   │ ├┬┘├─┤│││└─┐├┤ ├┤ ├┬┘└─┐
+	// └─┘┴ ┴└─┘└─┘┴ ┴   ┴ ┴└─┴ ┴┘└┘└─┘└  └─┘┴└─└─┘
+	// check transfers
+	async function verifyData(deal) {
+	  
+		const totalTransfers = deal.addHbarTransfer.length + deal.addTokenTransfer.length + deal.addNftTransfer.length
+		if (totalTransfers == 0) {
+		  document.getElementById('bannerNotice').innerHTML = `⚠️ No transfers found - please specify some transfers`  
+		return false
+		}
+
+		// check hbar transfers
+		let sumHbar = 0
+		for (const transfer of deal.addHbarTransfer) 
+		sumHbar += parseInt(transfer.value)
+
+		if (sumHbar != 0) {
+			document.getElementById('bannerNotice').innerHTML = `⚠️ Hbar transfers must sum to zero`  
+			return false
+		}
+
+		// check FT transfers
+		let sumFT = {}
+		for (const transfer of deal.addTokenTransfer) {
+			if (!sumFT[transfer.tokenId]) sumFT[transfer.tokenId] = 0
+			sumFT[transfer.tokenId] += parseInt(transfer.value)
+		}
+
+		for (let tokenId in sumFT) {
+		  if (sumFT[tokenId] != 0) {
+			document.getElementById('bannerNotice').innerHTML = `⚠️ FT transfers must sum to zero for token ${tokenId}`  
+			return false
+		  }
+		}
+		
+		return true
+	}
+	
+	
 	// ┌─┐┬ ┬┌┐ ┬  ┬┌─┐┬ ┬  ┬┌─┌─┐┌┬┐┌─┐┌┬┐┬┌─┐  ┌─┐┌─┐┬─┐┬┌─┐┌┬┐
 	// ├─┘│ │├┴┐│  │└─┐├─┤  ├┴┐├─┤ │ │ ││││││    └─┐│  ├┬┘│├─┘ │ 
 	// ┴  └─┘└─┘┴─┘┴└─┘┴ ┴  ┴ ┴┴ ┴ ┴ └─┘┴ ┴┴└─┘  └─┘└─┘┴└─┴┴   ┴ 
@@ -325,43 +367,9 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	    return
 	  }
 	  
-
-		// ┌─┐┬ ┬┌─┐┌─┐┬┌─  ┌┬┐┬─┐┌─┐┌┐┌┌─┐┌─┐┌─┐┬─┐┌─┐
-		// │  ├─┤├┤ │  ├┴┐   │ ├┬┘├─┤│││└─┐├┤ ├┤ ├┬┘└─┐
-		// └─┘┴ ┴└─┘└─┘┴ ┴   ┴ ┴└─┴ ┴┘└┘└─┘└  └─┘┴└─└─┘
-		// check transfers
-		// todo refactor these checks into separate function
-	  
-		const totalTransfers = deal.addHbarTransfer.length + deal.addTokenTransfer.length + deal.addNftTransfer.length
-		if (totalTransfers == 0) {
-		  document.getElementById('bannerNotice').innerHTML = `⚠️ No transfers found - please specify some transfers`  
-		return
-		}
-
-		// check hbar transfers
-		let sumHbar = 0
-		for (const transfer of deal.addHbarTransfer) 
-		sumHbar += parseInt(transfer.value)
-
-		if (sumHbar != 0) {
-			document.getElementById('bannerNotice').innerHTML = `⚠️ Hbar transfers must sum to zero`  
-			return
-		}
-
-		// check FT transfers
-		let sumFT = {}
-		for (const transfer of deal.addTokenTransfer) {
-			if (!sumFT[transfer.tokenId]) sumFT[transfer.tokenId] = 0
-			sumFT[transfer.tokenId] += parseInt(transfer.value)
-		}
-
-		for (let tokenId in sumFT) {
-		  if (sumFT[tokenId] != 0) {
-			document.getElementById('bannerNotice').innerHTML = `⚠️ FT transfers must sum to zero for token ${tokenId}`  
-			return
-		  }
-		}
-		
+	 //check transfers
+	 const isValid = await verifyData(deal)
+	  if (!isValid) return
 	  
 		// ┬ ┬┌─┐┬  ┌─┐  ┬ ┬┌─┐┬─┐┌─┐┌─┐
 		// ├─┤├┤ │  ├─┘  ├─┤├┤ ├┬┘├┤  ┌┘
