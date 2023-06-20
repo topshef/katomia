@@ -300,9 +300,12 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	function updateKatomicURL() {
 	  // Update the URL in the address bar
 	  const katomicScript = document.getElementById('myInputKscript').value
-	  const url = new URL(window.location.href);
-	  url.searchParams.set('kscript', katomicScript);
-	  history.replaceState(null, '', url.toString());
+	  const url = new URL(window.location.href)
+	  url.searchParams.delete('dealId') // if it exists
+	  if (katomicScript == '') url.searchParams.delete('kscript')
+	  else url.searchParams.set('kscript', katomicScript)
+	  history.replaceState(null, '', url.toString())
+	  
 	}
 
 
@@ -415,6 +418,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	});
 
 
+	//optional integrations...
+
 	// ┬┌─┌─┐┌┬┐┌─┐┌┬┐┬┌─┐  ┌┬┐┌─┐┌┬┐┌─┐┬  ┌─┐┌┬┐┌─┐┌─┐
 	// ├┴┐├─┤ │ │ ││││││     │ ├┤ │││├─┘│  ├─┤ │ ├┤ └─┐
 	// ┴ ┴┴ ┴ ┴ └─┘┴ ┴┴└─┘   ┴ └─┘┴ ┴┴  ┴─┘┴ ┴ ┴ └─┘└─┘
@@ -447,17 +452,13 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 	})
 	
-	
-	
-//dev test
-if (new URLSearchParams(window.location.search).has("test")) { 
-	(async function () {
-		const zz = await getTemplateList()
-		alert(JSON.stringify(zz))
-	})()
 
-}
-
+	// ┌┬┐┌─┐┌┬┐┌─┐┬  ┌─┐┌┬┐┌─┐  ┌─┐┌─┐┌┬┐┬┌─┐┌┐┌┌─┐
+	 // │ ├┤ │││├─┘│  ├─┤ │ ├┤   │ │├─┘ │ ││ ││││└─┐
+	 // ┴ └─┘┴ ┴┴  ┴─┘┴ ┴ ┴ └─┘  └─┘┴   ┴ ┴└─┘┘└┘└─┘
+	// template options
+	// update option list from template.txt
+	
 	getTemplateList()
 	
 	async function getTemplateList() {
@@ -487,6 +488,11 @@ if (new URLSearchParams(window.location.search).has("test")) {
 
 	}
 
+
+	// ┌─┐┌─┐┌┬┐  ┌┬┐┌─┐┌─┐┬    ┌─┐┬─┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┌┐┌┌─┐┌┬┐
+	// │ ┬├┤  │    ││├┤ ├─┤│    ├┤ ├┬┘│ ││││  ├─┤├─┘├─┘│││├┤  │ 
+	// └─┘└─┘ ┴   ─┴┘└─┘┴ ┴┴─┘  └  ┴└─└─┘┴ ┴  ┴ ┴┴  ┴  ┘└┘└─┘ ┴ 
+	// get deal from appnet
 	
 	async function getDeal(dealId) {
 		// fetch deal from kpos appnet
@@ -501,7 +507,31 @@ if (new URLSearchParams(window.location.search).has("test")) {
 		// network can be added to the query parameters, but if omitted this is located automatically
 		
 		const url = `https://kpos.uk/deal/query/?dealId=${dealId}`
+		console.log(`fetching ${url}`)
 		const response = await fetch(url)
 		const result = await response.json()
 		return result.deal
 	}
+
+
+	// ┬┌┐┌ ┬┌─┐┌─┐┌┬┐  ┌┬┐┌─┐┌─┐┬    ┌─┐┬─┐┌─┐┌┬┐  ┌─┐┌─┐┌─┐┌┐┌┌─┐┌┬┐
+	// ││││ │├┤ │   │    ││├┤ ├─┤│    ├┤ ├┬┘│ ││││  ├─┤├─┘├─┘│││├┤  │ 
+	// ┴┘└┘└┘└─┘└─┘ ┴   ─┴┘└─┘┴ ┴┴─┘  └  ┴└─└─┘┴ ┴  ┴ ┴┴  ┴  ┘└┘└─┘ ┴ 
+	// inject deal from appnet
+	// use this eg to share a tamperproof link for deals that have been published
+	
+	// insert script from dealId if requested from URL, and no script is present
+	let urlQuery = new URLSearchParams(window.location.search)
+	if (urlQuery.has('dealId')) { 
+		(async function () {
+			let kscript = document.getElementById("myInputKscript").value
+			if (kscript.trim() == '') {
+				let deal = await getDeal(urlQuery.get('dealId'))
+				console.log(deal,deal)
+				kscript = deal.userInput ?? 'Katomic script not found (deal may pre-date Kato!)'  			
+				document.getElementById("myInputKscript").value = kscript
+			}
+		})()
+	}
+
+
