@@ -393,7 +393,10 @@ for(let i = 0; i < detectionFuncs.length; i++) {
       })
 	  const responseText = await response.text()
 	  
+	  // todo.. switch to json and handle here
 	  document.getElementById('bannerNotice').innerHTML =  responseText
+	  const dealId =  (responseText.match(/([0-9a-fA-F]{6,})/) || [])[1];
+	  return dealId
 	  
     }
 
@@ -521,20 +524,21 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// use this eg to share a tamperproof link for deals that have been published
 	
 	// insert script from dealId if requested from URL, and no script is present
-	let urlQuery = new URLSearchParams(window.location.search)
-	if (urlQuery.has('dealId')) { 
-		(async function () {
-			let kscript = document.getElementById("myInputKscript").value
-			if (kscript.trim() == '') {
-				let deal = await getDeal(urlQuery.get('dealId'))
-				console.log(deal,deal)
-				kscript = deal.userInput ?? 'Katomic script not found (deal may pre-date Kato!)'  			
-				document.getElementById("myInputKscript").value = kscript
-			}
-		})()
+
+	injectDeal()
+	async function injectDeal() {
+	  let urlQuery = new URLSearchParams(window.location.search);
+	  if (urlQuery.has('dealId')) {
+		let kscript = document.getElementById("myInputKscript").value;
+		if (kscript.trim() == '') {
+		  let deal = await getDeal(urlQuery.get('dealId'));
+		  console.log(deal, deal);
+		  kscript = deal.userInput ?? 'Katomic script not found (deal may pre-date Kato!)';
+		  document.getElementById("myInputKscript").value = kscript;
+		}
+	  }
 	}
-
-
+	
 
 
 	// ┌┬┐┌─┐┬┌─┌─┐  ┬┌─┌─┐┌┬┐┌─┐  ┌┬┐┌─┐┌┐┌┌─┐┌─┐
@@ -552,3 +556,19 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  logoImage.src = 'kato2.png'
 	})
 
+
+	// ┌─┐┬ ┬┌┬┐┌─┐╔═╗┬ ┬┌┐ ┌┬┐┬┌┬┐
+	// ├─┤│ │ │ │ │╚═╗│ │├┴┐││││ │ 
+	// ┴ ┴└─┘ ┴ └─┘╚═╝└─┘└─┘┴ ┴┴ ┴ 
+	// autoSubmit if requested - for auto upstream/downstream demo
+	// eg use katomic.org as a publish & redirect service
+
+	let urlQuery = new URLSearchParams(window.location.search);
+	if (urlQuery.has('autoSubmit')) { 
+		(async function () {
+			let dummy = await injectDeal()
+			const dealId = await publishData()
+			console.log(`autoSubmit tryin to redirect to deal ${dealId}`)
+			window.location.href = `https://dev4.shop.gomint.me/m/?dealonly&detail&starttime=5mins&dealId=${dealId}`
+		})()
+	}
