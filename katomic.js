@@ -572,9 +572,14 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  let dummy = await injectDeal() // no reponse needed atm, review this later though
 
 	  if (urlQuery.has('autoSubmit')) {
-		const dealId = await publishData()
-		console.log(`autoSubmit tryin to redirect to deal ${dealId}`)
-		window.location.href = `https://dev4.shop.gomint.me/m/?dealonly&detail&starttime=5mins&dealId=${dealId}`
+		const dealId = await publishData()		
+		
+		// get redirect url from query, or default. todo error trap/ safety
+		let autoSubmitURL = decodeURIComponent(urlQuery.get('autoSubmit')) ||  `https://dev4.shop.gomint.me/m/?dealonly&detail&starttime=5mins&dealId=${dealId}`
+		
+		autoSubmitURL = autoSubmitURL.replace('${dealId}', dealId)
+		
+		window.location.href = autoSubmitURL
 	  }
 	}
 
