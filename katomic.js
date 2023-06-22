@@ -525,16 +525,15 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	
 	// insert script from dealId if requested from URL, and no script is present
 
-	injectDeal()
 	async function injectDeal() {
-	  let urlQuery = new URLSearchParams(window.location.search);
+	  let urlQuery = new URLSearchParams(window.location.search)
 	  if (urlQuery.has('dealId')) {
-		let kscript = document.getElementById("myInputKscript").value;
+		let kscript = document.getElementById("myInputKscript").value
 		if (kscript.trim() == '') {
-		  let deal = await getDeal(urlQuery.get('dealId'));
-		  console.log(deal, deal);
-		  kscript = deal.userInput ?? 'Katomic script not found (deal may pre-date Kato!)';
-		  document.getElementById("myInputKscript").value = kscript;
+		  let deal = await getDeal(urlQuery.get('dealId'))
+		  console.log(deal, deal)
+		  kscript = deal.userInput ?? 'Katomic script not found (deal may pre-date Kato!)'
+		  document.getElementById("myInputKscript").value = kscript
 		}
 	  }
 	}
@@ -546,29 +545,40 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// ┴ ┴┴ ┴┴ ┴└─┘  ┴ ┴┴ ┴ ┴ └─┘  ─┴┘┴ ┴┘└┘└─┘└─┘
 	// make kato dance!
 
-	const logoImage = document.getElementById('logo')
+	//handleLogoImage()
+	function handleLogoImage() {
+		const logoImage = document.getElementById('logo')
 
-	logoImage.addEventListener('mouseover', function() {
-	  logoImage.src = 'kato1.png'
-	})
+		logoImage.addEventListener('mouseover', function() {
+		  logoImage.src = 'kato1.png'
+		})
 
-	logoImage.addEventListener('mouseout', function() {
-	  logoImage.src = 'kato2.png'
-	})
+		logoImage.addEventListener('mouseout', function() {
+		  logoImage.src = 'kato2.png'
+		})
+	}
 
 
 	// ┌─┐┬ ┬┌┬┐┌─┐╔═╗┬ ┬┌┐ ┌┬┐┬┌┬┐
 	// ├─┤│ │ │ │ │╚═╗│ │├┴┐││││ │ 
 	// ┴ ┴└─┘ ┴ └─┘╚═╝└─┘└─┘┴ ┴┴ ┴ 
-	// autoSubmit if requested - for auto upstream/downstream demo
-	// eg use katomic.org as a publish & redirect service
+	// autoSubmit and redirect if requested - for auto upstream/downstream demo
+	// eg anyone can use katomic.org as a publish & redirect service
+	// beware spoofing though - marketplaces should verify deal hash and trusted operator ID via HCS appnet
+	// and buyer-beware on all signing activity
 
-	let urlQuery = new URLSearchParams(window.location.search);
-	if (urlQuery.has('autoSubmit')) { 
-		(async function () {
-			let dummy = await injectDeal()
-			const dealId = await publishData()
-			console.log(`autoSubmit tryin to redirect to deal ${dealId}`)
-			window.location.href = `https://dev4.shop.gomint.me/m/?dealonly&detail&starttime=5mins&dealId=${dealId}`
-		})()
+	async function handleQueryParams() {
+	  let urlQuery = new URLSearchParams(window.location.search)
+	  let dummy = await injectDeal() // no reponse needed atm, review this later though
+
+	  if (urlQuery.has('autoSubmit')) {
+		const dealId = await publishData()
+		console.log(`autoSubmit tryin to redirect to deal ${dealId}`)
+		window.location.href = `https://dev4.shop.gomint.me/m/?dealonly&detail&starttime=5mins&dealId=${dealId}`
+	  }
 	}
+
+	document.addEventListener('DOMContentLoaded', (event) => {
+	  handleLogoImage()
+	  handleQueryParams()
+	})
