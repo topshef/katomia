@@ -224,7 +224,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	
 	// inject known alias into line
 	function injectAlias(line, aliases) {
-		let pattern = /^([a-zA-Z0-9\.]+)\s+(sends|receives)\s+(.+)$/;
+		let pattern = /^([a-zA-Z0-9\._-]+)\s+(sends|receives)\s+(.+)$/;
 		if (!pattern.test(line)) return line;
 		for (let alias in aliases) 
 			line = line.replace(new RegExp("\\b" + alias + "\\b", 'g'), aliases[alias]);
