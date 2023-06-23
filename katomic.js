@@ -227,7 +227,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		let pattern = /^([a-zA-Z0-9\.]+)\s+(sends|receives)\s+(.+)$/;
 		if (!pattern.test(line)) return line;
 		for (let alias in aliases) 
-			line = line.replace(new RegExp(alias, 'g'), aliases[alias]);
+			line = line.replace(new RegExp("\\b" + alias + "\\b", 'g'), aliases[alias]);
 		return line;
 	}
 
