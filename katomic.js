@@ -333,7 +333,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		// check hbar transfers
 		let sumHbar = 0
 		for (const transfer of deal.addHbarTransfer) 
-		sumHbar += parseInt(transfer.value)
+		sumHbar += parseFloat(transfer.value)
 
 		if (sumHbar != 0) {
 			document.getElementById('bannerNotice').innerHTML = `⚠️ Hbar transfers must sum to zero`  
@@ -344,7 +344,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		let sumFT = {}
 		for (const transfer of deal.addTokenTransfer) {
 			if (!sumFT[transfer.tokenId]) sumFT[transfer.tokenId] = 0
-			sumFT[transfer.tokenId] += parseInt(transfer.value)
+			sumFT[transfer.tokenId] += parseFloat(transfer.value)
 		}
 
 		for (let tokenId in sumFT) {
