@@ -331,10 +331,12 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		}
 
 		// check hbar transfers
-		let sumHbar = 0
+		let sumHbar = 0.0
 		for (const transfer of deal.addHbarTransfer) 
-		sumHbar += parseFloat(transfer.value)
+			sumHbar += parseFloat(transfer.value)
 
+		sumHbar = parseFloat(sumHbar.toFixed(8))
+		
 		if (sumHbar != 0) {
 			document.getElementById('bannerNotice').innerHTML = `⚠️ Hbar transfers must sum to zero`  
 			return false
