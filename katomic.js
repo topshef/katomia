@@ -577,7 +577,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		const dealId = await publishData()		
 		
 		// get redirect url from query, or default. todo error trap/ safety
-		let autoSubmitURL = decodeURIComponent(urlQuery.get('autoSubmit')) ||  `https://dev4.shop.gomint.me/m/?dealonly&detail&starttime=5mins&dealId=${dealId}`
+		let autoSubmitURL = decodeURIComponent(urlQuery.get('autoSubmit')) ||  `https://labs4.shop.gomint.me/m/?dealonly&detail&starttime=5mins&dealId=${dealId}`
 		
 		autoSubmitURL = autoSubmitURL.replace('${dealId}', dealId)
 		
