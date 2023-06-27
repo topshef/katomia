@@ -2,6 +2,55 @@
 
 	//https://manytools.org/hacker-tools/ascii-banner/
 
+
+	// ┌─┐┌─┐┌─┐┌─┐  ┬  ┌─┐┌─┐┌┬┐
+	// ├─┘├─┤│ ┬├┤   │  │ │├─┤ ││
+	// ┴  ┴ ┴└─┘└─┘  ┴─┘└─┘┴ ┴─┴┘
+	// page load
+
+	let CONFIG  // global constants eg urlPublish
+	document.addEventListener('DOMContentLoaded', async (event) => {
+	  handleLogoImage()
+	  CONFIG = await getConfig()
+	  console.log('config=', CONFIG)
+	  handleQueryParams() // no need to await because we're not (yet) processing any response or chaining anything after this
+	})
+
+
+	// ┌─┐┌─┐┌┬┐  ┌─┐┌─┐┌┐┌┌─┐┬┌─┐  ┬┌─┐┌─┐┌┐┌
+	// │ ┬├┤  │   │  │ ││││├┤ ││ ┬  │└─┐│ ││││
+	// └─┘└─┘ ┴   └─┘└─┘┘└┘└  ┴└─┘o└┘└─┘└─┘┘└┘
+	// get config.json
+	
+	async function getConfig() {
+	  try {
+		const response = await fetch(PATH_CONFIG)
+		//if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+		return await response.json()
+
+	  } catch (error) {
+		console.log('Failed to load config.json:', error)
+		console.log('switching to getDefaultConfig')
+		return getDefaultConfig()
+	  }
+	}
+
+
+	function getDefaultConfig() {
+	  const defaultConfigJson = `
+		{
+		"testnet": {
+		  "urlPublish": "https://labs4.shop.gomint.me/m/?dealonly&detail&dealId=\${dealId}"
+		},
+		"mainnet": {
+		  "urlPublish": "https://swap.kpay.live.me/m/?dealonly&detail&dealId=\${dealId}"
+		}
+	  }
+`
+	  return JSON.parse(defaultConfigJson.trim())
+	}
+
+
 	// ┌─┐┬─┐┌─┐┌┐   ┬ ┬┬─┐┬    ┌─┐ ┬ ┬┌─┐┬─┐┬ ┬
 	// │ ┬├┬┘├─┤├┴┐  │ │├┬┘│    │─┼┐│ │├┤ ├┬┘└┬┘
 	// └─┘┴└─┴ ┴└─┘  └─┘┴└─┴─┘  └─┘└└─┘└─┘┴└─ ┴ 
@@ -380,25 +429,50 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	document.getElementById('btnPublish').addEventListener('click', publishData)
 
     async function publishData() {
-	  const deal = await handlePreview()
-	   
-	 //check transfers
-	 const isValid = await verifyData(deal)
-	  if (!isValid) return
-	  	   
-      const response = await fetch('https://kpos.uk/deal/write/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(deal) // Send the processed data as JSON
-      })
-	  const responseText = await response.text()
-	  
+		const deal = await handlePreview()
+
+		//check transfers
+		const isValid = await verifyData(deal)
+		if (!isValid) return
+		   
+		const response = await fetch('https://kpos.uk/deal/write/?json', {
+		method: 'POST',
+		headers: {
+		  'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(deal) // Send the processed data as JSON
+		})
+
+		const result = await response.json()
+
+		const { network, dealId, isExisting } = result
+
+		// display result to user
+		let html = isExisting ? 'Existing deal found.' : 'Published!'
+
+		//let domain = network == 'mainnet' ? 'swap.kpay.live' : 'labs4.shop.gomint.me'
+		//let redirectURL = `https://${domain}/m/?dealonly&detail&dealId=${dealId}&starttime=5mins`
+		let dealId_short = dealId.substring(0, 6).toUpperCase()
+
+		
+		let urlPublish = CONFIG[network].urlPublish
+
+		urlPublish = urlPublish.replace('${dealId}', dealId)
+
+		let starttime = '5mins'
+
+		let link = `<a href="${urlPublish}&starttime=${starttime}" target="_blank">${dealId_short}</a>`;
+
+		//let link = `<a href="https://${domain}/m/?dealonly&detail&dealId=${dealId}&starttime=5mins" target="_blank">${dealId_short}</a>`;
+		html += ` See ref ${link}`;
+		//html += ' (refactor test)'
+
 	  // todo.. switch to json and handle here
-	  document.getElementById('bannerNotice').innerHTML =  responseText
-	  const dealId =  (responseText.match(/([0-9a-fA-F]{6,})/) || [])[1];
-	  return dealId
+	  //document.getElementById('bannerNotice').innerHTML =  responseText
+	  document.getElementById('bannerNotice').innerHTML =  html
+	  //const dealId =  (responseText.match(/([0-9a-fA-F]{6,})/) || [])[1];
+	  
+	  return {network, dealId, urlPublish}
 	  
     }
 
@@ -574,18 +648,16 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  let dummy = await injectDeal() // no reponse needed atm, review this later though
 
 	  if (urlQuery.has('autoSubmit')) {
-		const dealId = await publishData()		
+		const {network, dealId, urlPublish} = await publishData()
 		
 		// get redirect url from query, or default. todo error trap/ safety
-		let autoSubmitURL = decodeURIComponent(urlQuery.get('autoSubmit')) ||  `https://labs4.shop.gomint.me/m/?dealonly&detail&starttime=5mins&dealId=${dealId}`
-		
+		let autoSubmitURL = decodeURIComponent(urlQuery.get('autoSubmit')) || urlPublish
+//		`https://labs4.shop.gomint.me/m/?dealonly&detail&starttime=5mins&dealId=${dealId}`
+		console.log("autoSubmitURL",autoSubmitURL)
 		autoSubmitURL = autoSubmitURL.replace('${dealId}', dealId)
 		
 		window.location.href = autoSubmitURL
 	  }
 	}
 
-	document.addEventListener('DOMContentLoaded', (event) => {
-	  handleLogoImage()
-	  handleQueryParams()
-	})
+

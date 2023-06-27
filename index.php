@@ -5,6 +5,8 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="katomic.css">
+  <link rel="icon" href="K.ico" type="image/x-icon">
+
   
   <!-- json formatter https://highlightjs.org/ 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
@@ -39,6 +41,11 @@ might be confused with give feedback on the script-->
   <div id='preview'></div>
   
   <!-- <script src="katomic.js"></script> --> 
+  <script>
+    var PATH_CONFIG = "config.json?v=<?php echo filemtime('config.json'); ?>"
+console.log('PATH_CONFIG=',PATH_CONFIG)
+  </script>
+
   <script src="katomic.js<?php echo '?v=' . filemtime('katomic.js'); ?>"></script>
 
 </body>
