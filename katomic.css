@@ -10,11 +10,16 @@
       background-color: var(--colorBackground);
 	  
     }
-    
+
+	:root {
+	  --max-width: 500px; /* Set a CSS variable */
+	}
+		
     textarea {
       padding: 10px;
-	  width: 70%;
-	  max-width: 500px;
+	  width: calc(min(70%, var(--max-width))); /* allows user to resize */
+	  /* width: 70%; */
+	  /* max-width: 500px; */
       height: 14em;
       resize: both;
       border-radius: 8px; /* Round the corners of the textarea */
@@ -24,7 +29,13 @@
 	  padding: 10px; /* Add padding to the input box */
 	
     }
-    
+
+
+	textarea.resizable {
+	  width: auto;
+	}
+
+		
     button {
       padding: 10px 20px;
       margin: 10px;

@@ -24,8 +24,7 @@
 	  <option value="">Choose a template</option>
 	</select>
 
-	  
-	<textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
+    <textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
 
   
   <div id='buttonsContainer'>
@@ -45,6 +44,8 @@ might be confused with give feedback on the script-->
     var PATH_CONFIG = "config.json?v=<?php echo filemtime('config.json'); ?>"
 console.log('PATH_CONFIG=',PATH_CONFIG)
   </script>
+
+  <script src="typing.js"></script>
 
   <script src="katomic.js<?php echo '?v=' . filemtime('katomic.js'); ?>"></script>
 

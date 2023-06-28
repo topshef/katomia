@@ -57,12 +57,18 @@
 	// grab url query
 
 	// Get the URL parameter value
-	const urlParams = new URLSearchParams(window.location.search)
-	const katomicValue = urlParams.get('kscript')
+	const urlQuery = new URLSearchParams(window.location.search)
+	const kscript = urlQuery.get('kscript')
 
 	// Set the value of the textarea
-	const textarea = document.getElementById('myInputKscript')
-	textarea.value = katomicValue
+	if (kscript)
+	if (urlQuery.has('typingspeed') && typeof simulateTyping === 'function') {
+		  let typingspeed = urlQuery.get('typingspeed') ?? 10
+		  simulateTyping('myInputKscript', kscript, {speed: typingspeed})
+	}
+	else document.getElementById('myInputKscript').value = kscript // fallback
+	  
+	
 
 	// ┌─┐┌─┐┬─┐┌─┐┌─┐  ┬┌─┌─┐┌┬┐┌─┐┌┬┐┬┌─┐  ┌─┐┌─┐┬─┐┬┌─┐┌┬┐
 	// ├─┘├─┤├┬┘└─┐├┤   ├┴┐├─┤ │ │ ││││││    └─┐│  ├┬┘│├─┘ │ 
@@ -510,7 +516,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// but the full 64 char id can be used, per HCS appnet
 	
 	//placeholder.. templates
-	
+	//already defined let urlQuery = new URLSearchParams(window.location.search)
+	 
     let dropdown = document.getElementById("kscriptTemplateOptions")
 
     dropdown.addEventListener("change", async function() {
@@ -527,7 +534,15 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  
 	  let deal = await getDeal(dealId)
       let kscript = deal.userInput ?? 'Katomic script not found (deal may pre-date Kato!)'  
-      myInputKscript.value = kscript
+	  
+		  
+	  if (urlQuery.has('typingspeed') && typeof simulateTyping === 'function') {
+		  myInputKscript.value = ''
+		  let typingspeed = urlQuery.get('typingspeed') ?? 10
+		  simulateTyping('myInputKscript', kscript, {speed: typingspeed})
+	  }
+	  else myInputKscript.value = kscript // fallback
+	  
 
 	})
 	
@@ -609,7 +624,15 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		  let deal = await getDeal(urlQuery.get('dealId'))
 		  console.log(deal, deal)
 		  kscript = deal.userInput ?? 'Katomic script not found (deal may pre-date Kato!)'
-		  document.getElementById("myInputKscript").value = kscript
+		  //simulateTyping('myInputKscript', kscript, {speed: 20})
+		  
+			if (urlQuery.has('typingspeed') && typeof simulateTyping === 'function') {
+				  let typingspeed = urlQuery.get('typingspeed') ?? 10
+				  simulateTyping('myInputKscript', kscript, {speed: typingspeed})
+			}
+			else document.getElementById('myInputKscript').value = kscript // fallback
+	
+		 // document.getElementById("myInputKscript").value = kscript
 		}
 	  }
 	}
