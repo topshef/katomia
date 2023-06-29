@@ -1,3 +1,12 @@
+<?php
+// redirect option
+// avoid redirect if any query, to avoid breaking links (later can redirect query too)
+if (file_exists('redirect.txt') && $_SERVER['QUERY_STRING'] == '') {
+	$url = trim(file_get_contents('redirect.txt'));
+	header("Location: $url");
+	exit;
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
