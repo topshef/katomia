@@ -64,7 +64,7 @@
 	if (kscript)
 	if (urlQuery.has('typingspeed') && typeof simulateTyping === 'function') {
 		  let typingspeed = urlQuery.get('typingspeed') ?? 10
-		  simulateTyping('myInputKscript', kscript, {speed: typingspeed})
+		  typingNow = simulateTyping('myInputKscript', kscript, {speed: typingspeed})
 	}
 	else document.getElementById('myInputKscript').value = kscript // fallback
 	  
@@ -350,15 +350,17 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 		document.getElementById('bannerNotice').innerHTML = '<a href="' + window.location.href + '" target="_blank">A permalink has been copied to clipboard</a>'
 		
+		// also offer a demo link with typing animation..
 		document.getElementById('bannerNotice').innerHTML += '<BR><div id="typing"></div>'
-		if (typeof simulateTyping === 'function') console.log('function simulateTyping exists ok')
 		
-		await simulateTyping('typing', "Or grab a ", {speed: 20, elementProperty: 'innerHTML'})
+		//if (typeof simulateTyping === 'function') console.log('function simulateTyping exists ok')
+		typingNow = simulateTyping('typing', "Or grab a ", {speed: 20, elementProperty: 'innerHTML'})
+		await typingNow.promise
 
 		const linkTyping = '<a id="demolink" href="' + window.location.href + '&typingspeed=30" target="_blank"></a>'
 		document.getElementById('typing').innerHTML += linkTyping
-		await simulateTyping('demolink', 'demo link', {speed: 20, elementProperty: 'innerHTML'})
-		
+		typingNow = simulateTyping('demolink', 'demo link', {speed: 20, elementProperty: 'innerHTML'})
+		//await typingNow.promise
 
 	}
 
@@ -503,8 +505,12 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	document.getElementById('btnClear').addEventListener('click', function() {
 		 var confirmAction = confirm("Start a new script?")
 		 if (confirmAction) {
+			 if (typingNow) typingNow.cancel()
+		     urlQuery.delete('typingspeed') // if it exists
 			 document.getElementById("myInputKscript").value = ''
-			updateKatomicURL()
+			 document.getElementById('bannerNotice').innerHTML = ''
+			 document.getElementById('preview').style.display = 'none'
+			 updateKatomicURL()
 			
 			//reset the dropdown
 			document.getElementById("kscriptTemplateOptions").selectedIndex = 0
@@ -533,7 +539,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
     let dropdown = document.getElementById("kscriptTemplateOptions")
 
     dropdown.addEventListener("change", async function() {
-      let dealId = dropdown.value
+      if (typingNow) typingNow.cancel()
+	  let dealId = dropdown.value
 	  let myInputKscript = document.getElementById("myInputKscript")
 	  
       if (myInputKscript.value.trim() !== "") {
@@ -551,7 +558,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  if (urlQuery.has('typingspeed') && typeof simulateTyping === 'function') {
 		  myInputKscript.value = ''
 		  let typingspeed = urlQuery.get('typingspeed') ?? 10
-		  simulateTyping('myInputKscript', kscript, {speed: typingspeed})
+		  typingNow = simulateTyping('myInputKscript', kscript, {speed: typingspeed})
 	  }
 	  else myInputKscript.value = kscript // fallback
 	  
@@ -640,7 +647,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		  
 			if (urlQuery.has('typingspeed') && typeof simulateTyping === 'function') {
 				  let typingspeed = urlQuery.get('typingspeed') ?? 10
-				  simulateTyping('myInputKscript', kscript, {speed: typingspeed})
+				  typingNow = simulateTyping('myInputKscript', kscript, {speed: typingspeed})
 			}
 			else document.getElementById('myInputKscript').value = kscript // fallback
 	

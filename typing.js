@@ -2,7 +2,12 @@
 
 // simulate the user typing in stuff.. for demo use / fun / get ppl thinking about connection with AI etc
 
+let typingNow
+
 function simulateTyping(elementId, text, options) {
+  
+  if (typingNow) typingNow.cancel() // cancel any previous typing
+	  
   let { speed = 30, elementProperty = 'value' } = options || {}
   const typingDelay = 1000 / speed
   
@@ -14,11 +19,20 @@ function simulateTyping(elementId, text, options) {
     return;
   }
 
+	  
   let currentIndex = 0
   //const typingInterval = speed
+  let isCancelled = false
+  let timeoutId = null
   
-  return new Promise(resolve => { // Wrap your function in a Promise
+  const promise = new Promise((resolve, reject) => {
+  //return new Promise(resolve => { // Wrap your function in a Promise
 	  function typeNextLetter() {
+		if (isCancelled) {
+		  clearTimeout(timeoutId)
+		  reject(new Error('Typing simulation cancelled'))
+		  return
+		}
 		const currentText = element[elementProperty] || ''
 		const nextLetter = text[currentIndex]
 		//element.value = currentText + nextLetter
@@ -36,11 +50,19 @@ function simulateTyping(elementId, text, options) {
 		
 		const typingInterval  = nextLetter === '\n' ? currentDelay * 7 : currentDelay
 		
-		if (currentIndex < text.length) setTimeout(typeNextLetter, typingInterval)
+		if (currentIndex < text.length)
+			timeoutId = setTimeout(typeNextLetter, typingInterval)
 		else resolve()
 			
 	  }
 	
 	typeNextLetter()
   })  // end of promise
+  
+  typingNow = {
+    promise,
+    cancel: () => { isCancelled = true }
+  }
+  
+  return typingNow
 }
