@@ -2,39 +2,45 @@
 
 // simulate the user typing in stuff.. for demo use / fun / get ppl thinking about connection with AI etc
 
-function simulateTyping(textboxId, text, options) {
-  let { speed = 1 } = options || {}
+function simulateTyping(elementId, text, options) {
+  let { speed = 30, elementProperty = 'value' } = options || {}
   const typingDelay = 1000 / speed
   
-  const textbox = document.getElementById(textboxId)
-  if (!textbox) {
-    console.error(`Textbox with ID "${textboxId}" not found.`)
+  const element = document.getElementById(elementId)
+  console.log("simulateTyping to begin on ID=", element)
+
+  if (!element) {
+    console.error(`Textbox with ID "${elementId}" not found.`)
     return;
   }
 
   let currentIndex = 0
   //const typingInterval = speed
   
-  
-  function typeNextLetter() {
-    const currentText = textbox.value || ''
-    const nextLetter = text[currentIndex]
-    textbox.value = currentText + nextLetter
+  return new Promise(resolve => { // Wrap your function in a Promise
+	  function typeNextLetter() {
+		const currentText = element[elementProperty] || ''
+		const nextLetter = text[currentIndex]
+		//element.value = currentText + nextLetter
+		element[elementProperty] =  currentText + nextLetter;
 
-    currentIndex++
-    textbox.scrollTop = textbox.scrollHeight // Scroll to the bottom of the textbox
 
-	// add some randomness for more natural feel
-	const delayVariation = 0.5
-	const minDelay = typingDelay - (typingDelay * delayVariation)
-	const maxDelay = typingDelay + (typingDelay * delayVariation)
-	const currentDelay = Math.random() * (maxDelay - minDelay) + minDelay
-	
-	const typingInterval  = nextLetter === '\n' ? currentDelay * 7 : currentDelay
-	
-    if (currentIndex < text.length) setTimeout(typeNextLetter, typingInterval)
+		currentIndex++
+		element.scrollTop = element.scrollHeight // Scroll to the bottom of the element
+
+		// add some randomness for more natural feel
+		const delayVariation = 0.5
+		const minDelay = typingDelay - (typingDelay * delayVariation)
+		const maxDelay = typingDelay + (typingDelay * delayVariation)
+		const currentDelay = Math.random() * (maxDelay - minDelay) + minDelay
 		
-  }
-
-  typeNextLetter()
+		const typingInterval  = nextLetter === '\n' ? currentDelay * 7 : currentDelay
+		
+		if (currentIndex < text.length) setTimeout(typeNextLetter, typingInterval)
+		else resolve()
+			
+	  }
+	
+	typeNextLetter()
+  })  // end of promise
 }

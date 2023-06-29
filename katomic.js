@@ -349,6 +349,17 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		navigator.clipboard.writeText(window.location.href)
 
 		document.getElementById('bannerNotice').innerHTML = '<a href="' + window.location.href + '" target="_blank">A permalink has been copied to clipboard</a>'
+		
+		document.getElementById('bannerNotice').innerHTML += '<BR><div id="typing"></div>'
+		if (typeof simulateTyping === 'function') console.log('function simulateTyping exists ok')
+		
+		await simulateTyping('typing', "Or grab a ", {speed: 20, elementProperty: 'innerHTML'})
+
+		const linkTyping = '<a id="demolink" href="' + window.location.href + '&typingspeed=30" target="_blank"></a>'
+		document.getElementById('typing').innerHTML += linkTyping
+		await simulateTyping('demolink', 'demo link', {speed: 20, elementProperty: 'innerHTML'})
+		
+
 	}
 
 
@@ -357,6 +368,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  const katomicScript = document.getElementById('myInputKscript').value
 	  const url = new URL(window.location.href)
 	  url.searchParams.delete('dealId') // if it exists
+	  url.searchParams.delete('typingspeed') // if it exists
 	  if (katomicScript == '') url.searchParams.delete('kscript')
 	  else url.searchParams.set('kscript', katomicScript)
 	  history.replaceState(null, '', url.toString())
