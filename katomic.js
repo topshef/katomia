@@ -221,7 +221,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// detect hbar transfer
 
 	function detectTransferHbar(line) {
-		const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (hbar|h)$/
+		//const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (hbar|h)$/
+		const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (hbar|h)$/
 		const matches = line.match(pattern)
 		if (!matches) return false
 		
@@ -237,7 +238,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   ╚   ╩    ┴ ┴└─┴ ┴┘└┘└─┘└  └─┘┴└─
 	// detect FT transfer	
 	function detectTransferFT(line) {
-		const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
+		//const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
+		const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
 		const matches = line.match(pattern)
 		if (!matches) return false
 		
@@ -257,9 +259,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	function detectTransferNFT(line) {
 		//const pattern = /^(\d+\.\d+\.\d+) sends NFT (\d+\.\d+\.\d+)-(\d+) to (\d+\.\d+\.\d+)$/
 		//const pattern = /^(\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?:-|#)(\d+) to (\d+\.\d+\.\d+)$/;
-		const pattern = /^(\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?: ?[-#])(\d+) to (\d+\.\d+\.\d+)$/;
-		
-		
+		//const pattern = /^(\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?: ?[-#])(\d+) to (\d+\.\d+\.\d+)$/
+		const pattern = /^(buyer|\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?: ?[-#])(\d+) to (buyer|\d+\.\d+\.\d+)$/
 
 		const matches = line.match(pattern)
 		if (!matches) return false
