@@ -480,7 +480,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 		urlPublish = urlPublish.replace('${dealId}', dealId)
 
-		let starttime = '5mins'
+		let starttime = urlQuery.get('starttime') ?? '5mins'
 
 		let link = `<a href="${urlPublish}&starttime=${starttime}" target="_blank">${dealId_short}</a>`;
 
