@@ -141,6 +141,12 @@
 			addNftTransfer.push({...result, userInput})
 			return false
 		}
+
+		result = detectTransferNFTviaSpender(line)
+		if (result) {
+			addNftTransfer.push({...result, userInput})
+			return false
+		}
 		
 		return true
       })
@@ -272,6 +278,16 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		//matching https://docs.hedera.com/hedera/sdks-and-apis/sdks/tokens/transfer-tokens
 	}
 
+	function detectTransferNFTviaSpender(line) {
+		//repeating above but adding spender. could add to existing but safer to begin with new function
+		const pattern = /^(buyer|\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?: ?[-#])(\d+) to (buyer|\d+\.\d+\.\d+) via (\d+\.\d+\.\d+)$/
+
+		const matches = line.match(pattern)
+		if (!matches) return false
+		
+		const [_, sender, tokenId, serial, receiver, spender] = matches
+		return {sender, tokenId, serial, receiver, spender}
+	}
 
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌─┐┌┐┌┌┬┐  ┬┌┐┌ ┬┌─┐┌─┐┌┬┐  ┌─┐┬  ┬┌─┐┌─┐
 	 // ││├┤  │ ├┤ │   │   ├─┤│││ ││  ││││ │├┤ │   │   ├─┤│  │├─┤└─┐
