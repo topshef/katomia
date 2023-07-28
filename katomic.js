@@ -84,6 +84,10 @@
 	  const addNftTransfer = []
 	  const display = {} // optional: title, description, thumbnail, button label
 	  const comments = []
+
+	  //advanced options
+	  const parameters = []
+	  let conditions = []
 	  
 	  let result
       // lines.forEach(line => {
@@ -148,9 +152,22 @@
 			return false
 		}
 		
+		result = detectParameters(line)
+		if (result) {
+			parameters.push(result)
+			return false
+		}
+		
+		result = detectConditions(line)
+		if (result) {
+			conditions.push(result)
+			return false
+		}
+		
 		return true
       })
 
+	conditions = condenseConditions(conditions)
 
 
 /* to consider later for refactor
@@ -171,8 +188,57 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 */
 	  
-      return {network, display, alias, addHbarTransfer, addTokenTransfer, addNftTransfer, pendingLines, comments, userInput: data} 
+      return {network, display, alias, parameters, conditions, addHbarTransfer, addTokenTransfer, addNftTransfer, pendingLines, comments, userInput: data} 
     }
+
+	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┬─┐┌─┐┌┬┐┌─┐┌┬┐┌─┐┬─┐┌─┐
+	 // ││├┤  │ ├┤ │   │   ├─┘├─┤├┬┘├─┤│││├┤  │ ├┤ ├┬┘└─┐
+	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   ┴  ┴ ┴┴└─┴ ┴┴ ┴└─┘ ┴ └─┘┴└─└─┘
+	// detect parameters
+	function detectParameters(line) {
+		// eg parameters user_code [enter promo code] text
+		// interim to match gomint
+		const regex = /parameters\s+(?<fieldName>[\w]+)\s+(?<fieldValue>.+)/
+		const matches = line.match(regex)
+		if (matches)
+			return { [matches.groups.fieldName]: matches.groups.fieldValue }
+	}
+
+	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┌┐┌┌┬┐┬┌┬┐┬┌─┐┌┐┌┌─┐
+	 // ││├┤  │ ├┤ │   │   │  │ ││││ │││ │ ││ ││││└─┐
+	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   └─┘└─┘┘└┘─┴┘┴ ┴ ┴└─┘┘└┘└─┘
+	// detect conditions
+	
+	// advanced used only
+	// interim process to match gomint
+
+	function detectConditions(line) {
+		// eg conditions 0 scriptName myscript
+		const regex = /conditions\s+(?<index>\d+)\s+(?<fieldName>\w+)\s+(?<fieldValue>.+)/
+		let matches = line.match(regex)
+		if(matches)
+		 return [ { [matches.groups.index]: { [matches.groups.fieldName]: matches.groups.fieldValue } } ]
+	}
+
+	//convert conditions object into an array
+	function condenseConditions(conditions) {
+		let condensed = []
+
+		conditions.forEach(conditionArray => {
+			let condition = conditionArray[0] // Extract the condition object
+			let index = Object.keys(condition)[0] // Get the index (which is the key of the condition object)
+
+			// If we don't have an object for this index in the result array, create one
+			if (!condensed[index]) condensed[index] = {}
+
+			// Merge the properties of the condition object into the appropriate object in the result array
+			condensed[index] = {...condensed[index], ...condition[index]}
+		})
+
+		// Remove empty elements if indices were not in sequence or some were missing
+		return condensed.filter(Boolean)
+	}
+
 
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┌┬┐┌┬┐┌─┐┌┐┌┌┬┐
 	 // ││├┤  │ ├┤ │   │   │  │ │││││││├┤ │││ │ 
@@ -496,7 +562,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 		urlPublish = urlPublish.replace('${dealId}', dealId)
 
-		let starttime = urlQuery.get('starttime') ?? '5mins'
+		let starttime = urlQuery.get('starttime') ?? ''
 
 		let link = `<a href="${urlPublish}&starttime=${starttime}" target="_blank">${dealId_short}</a>`;
 
