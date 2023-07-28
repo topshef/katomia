@@ -86,7 +86,7 @@
 	  const comments = []
 
 	  //advanced options
-	  const parameters = []
+	  let parameters = {}
 	  let conditions = []
 	  
 	  let result
@@ -154,7 +154,7 @@
 		
 		result = detectParameters(line)
 		if (result) {
-			parameters.push(result)
+			parameters = {...parameters, ...result}
 			return false
 		}
 		
