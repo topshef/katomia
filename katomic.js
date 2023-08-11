@@ -2,6 +2,8 @@
 
 	//https://manytools.org/hacker-tools/ascii-banner/
 
+	let isSumValidationNeeded = true // if variables are used, flip this to false
+
 
 	// ┌─┐┌─┐┌─┐┌─┐  ┬  ┌─┐┌─┐┌┬┐
 	// ├─┘├─┤│ ┬├┤   │  │ │├─┤ ││
@@ -293,13 +295,24 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// detect hbar transfer
 
 	function detectTransferHbar(line) {
-		//const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (hbar|h)$/
-		const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (hbar|h)$/
+		//either entity format 0.0.12345, or {some_variable}
+		//const pattern1 = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (hbar|h)$/
+		//const pattern2 = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ({[a-z0-9_-]+}) (hbar|h)$/
+		//const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) (([0-9.]+)|({[a-z0-9_-]+})) (hbar|h)$/
+		const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) (([0-9.]+)|({[a-z0-9_-]+})) (hbar|h)$/i
+
 		const matches = line.match(pattern)
 		if (!matches) return false
 		
 		let [_, accountId, verb, value, unit] = matches
-		if (verb == 'sends') value = -1 * value 
+		
+		let isVariable = /\{[a-zA-Z0-9_-]+\}/.test(value)
+		if (isVariable) isSumValidationNeeded = false 
+		
+		if (verb == 'sends') 
+			if (isVariable) value = '-' + value
+			else value = -1 * value 
+		
 		
 		return {accountId, value}
 	}
@@ -502,7 +515,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 		sumHbar = parseFloat(sumHbar.toFixed(8))
 		
-		if (sumHbar != 0) {
+		if (isSumValidationNeeded && sumHbar != 0) {
 			document.getElementById('bannerNotice').innerHTML = `⚠️ Hbar transfers must sum to zero`  
 			return false
 		}
