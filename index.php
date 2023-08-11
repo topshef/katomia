@@ -6,11 +6,18 @@ if (file_exists('redirect.txt') && $_SERVER['QUERY_STRING'] == '') {
 	header("Location: $url");
 	exit;
 }
+
+// add some of the deal ID to the title to assist with multi-tab deal development
+//(could do this in js also)
+$title = 'Katomic';
+$dealId = $_GET['dealId'] ?? false;
+if ($dealId) $title .= ' ' . substr($dealId,0,5);
+
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Katomic demo</title>
+  <title><?=$title?></title>
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="katomic.css">

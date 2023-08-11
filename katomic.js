@@ -152,18 +152,18 @@
 			return false
 		}
 		
-		result = detectParameters(line)
-		if (result) {
-			parameters = {...parameters, ...result}
-			return false
-		}
-		
 		result = detectConditions(line)
 		if (result) {
 			conditions.push(result)
 			return false
 		}
-		
+
+		result = detectParameters(line)
+		if (result) {
+			parameters = {...parameters, ...result}
+			return false
+		}
+				
 		return true
       })
 
@@ -318,10 +318,19 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		let [_, accountId, verb, value, tokenId] = matches
 		if (verb == 'sends') value = -1 * value 
 		
+		
+		//need to convert decimals
+		//need async fetch
+		//https://gomint.me/api/token/getTokenInfoMirror.php?onecell&field=decimals&network=$network&tokenId=$tokenId
+		
 		return {tokenId, accountId, value}
 		
 		//matching https://docs.hedera.com/hedera/sdks-and-apis/sdks/tokens/transfer-tokens
 	}
+
+
+//https://gomint.me/api/token/getTokenInfoMirror.php?onecell&field=decimals&network=$network&tokenId=
+
 
 
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ╔╗╔╔═╗╔╦╗  ┌┬┐┬─┐┌─┐┌┐┌┌─┐┌─┐┌─┐┬─┐
