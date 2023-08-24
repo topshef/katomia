@@ -59,8 +59,8 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 	  <!--
 	  <a href='https://feedback.katomic.org/' target='feedback'><img src='./img/feedback.png' alt='Github' height='30'></a>
 	  -->
-	  <span class='tooltip' data-tooltip="Give feedback or share ideas!">
-		<a href='https://feedback.userreport.com/28128e53-a7f7-4d81-8125-6d3119abe94e/#ideas/popular' target='feedback'><img src='./img/feedback.png' alt='Github' height='25'></a>
+	  <span class='tooltip' data-tooltip="Give feedback, report a bug, or share ideas!">
+		<a href='https://feedback.userreport.com/28128e53-a7f7-4d81-8125-6d3119abe94e/#ideas/popular' target='feedback'><img src='./img/feedback.png' alt='Feedback' height='25'></a>
 	  </span>
 
 	  <span class='tooltip' data-tooltip="Follow Kato on X/Twitter">
