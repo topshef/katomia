@@ -44,8 +44,6 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 
   
   <div id='buttonsContainer'>
-<!--    <div class='tooltip' data-tooltip="Give feedback!"><a href='http://feedback.katomic.org' target='_blank'><img src='feedback.png' height='25px'></a></div> 
-might be confused with give feedback on the script-->
 	  <div id='btnClear' class='tooltip' data-tooltip="Clear"><img src='trash.png' alt='trash' height="18px" style="padding-right: 10px"></div>
 	  <div id='btnCopyPermalink' class='tooltip' data-tooltip="Copy to Clipboard">Copy permalink</div>
 	  <button id='btnPreview'>Preview</button> 
@@ -55,10 +53,24 @@ might be confused with give feedback on the script-->
   
   <div id='preview'></div>
   
+
   <div id='footer'>
-	  <a href='https://x.com/gokatomic' target='gokatomic'><img src='./img/x-logo-black.png' alt='X' height='20'></a>
-	  <a href='https://github.com/topshef/katomia/' target='katomia'><img src='./img/github-mark.svg' alt='Github' height='20'></a>
-	  
+	<HR>
+	  <!--
+	  <a href='https://feedback.katomic.org/' target='feedback'><img src='./img/feedback.png' alt='Github' height='30'></a>
+	  -->
+	  <span class='tooltip' data-tooltip="Give feedback or share ideas!">
+		<a href='https://feedback.userreport.com/28128e53-a7f7-4d81-8125-6d3119abe94e/#ideas/popular' target='feedback'><img src='./img/feedback.png' alt='Github' height='25'></a>
+	  </span>
+
+	  <span class='tooltip' data-tooltip="Follow Kato on X/Twitter">
+		<a href='https://x.com/gokatomic' target='gokatomic'><img src='./img/x-logo-black.png' alt='X' height='20'></a>
+	  </span>
+	  <span class='tooltip' data-tooltip="View or contribute code on Github">
+		<a href='https://github.com/topshef/katomia/' target='katomia'><img src='./img/github-mark.svg' alt='Github' height='20'></a>
+	  </span>
+
+	  	  
 	  <!-- 
 	  <a href='https://meet.katomic.org' target='katomia'><img src='https://zep.us/images/light/layout/logo_zep.svg' alt='Zep' height='20'></a>
 -->
