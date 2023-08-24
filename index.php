@@ -32,7 +32,7 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 </head>
 <body>
   <!-- <header> -->
-	  <img id='logo' src="logo.png" alt="Kato" class="logo">
+	  <a href='https://x.com/gokatomic' target='gokatomic'><img id='logo' src="logo.png" alt="Kato" class="logo"></a>
 	  <div class="logo-text"> <strong>Kato</strong> is <strong>#katomic</strong></div>
   <!-- </header> -->
   
