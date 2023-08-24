@@ -55,6 +55,16 @@ might be confused with give feedback on the script-->
   
   <div id='preview'></div>
   
+  <div id='footer'>
+	  <a href='https://x.com/gokatomic' target='gokatomic'><img src='./img/x-logo-black.png' alt='X' height='20'></a>
+	  <a href='https://github.com/topshef/katomia/' target='katomia'><img src='./img/github-mark.svg' alt='Github' height='20'></a>
+	  
+	  <!-- 
+	  <a href='https://meet.katomic.org' target='katomia'><img src='https://zep.us/images/light/layout/logo_zep.svg' alt='Zep' height='20'></a>
+-->
+	  
+  </div>
+  
   <!-- <script src="katomic.js"></script> --> 
   <script>
     var PATH_CONFIG = "config.json?v=<?php echo filemtime('config.json'); ?>"

@@ -87,14 +87,12 @@
     }
 	
   
-  #buttonsContainer {
+  #buttonsContainer, #footer {
 	  display: flex;
 	  gap: 10px; /* Add gap between buttons */
 	  flex-wrap: nowrap; /* Prevent buttons from wrapping */
 	  align-items: center; 
 	}
-
-
 
 :root {
   --color1: #e9e9e9;
