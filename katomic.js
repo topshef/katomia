@@ -2,7 +2,9 @@
 
 	//https://manytools.org/hacker-tools/ascii-banner/
 
+	let network =''
 	let isSumValidationNeeded = true // if variables are used, flip this to false
+
 
 	// ┌─┐┌─┐┌─┐┌─┐  ┬  ┌─┐┌─┐┌┬┐
 	// ├─┘├─┤│ ┬├┤   │  │ │├─┤ ││
@@ -79,7 +81,6 @@
     function parseKatomic(data) {
 	  const lines = data.split('\n')
 	  const alias = {}
-	  let network =''
 	  const addHbarTransfer = []
 	  const addTokenTransfer = []
 	  const addNftTransfer = []
@@ -336,9 +337,14 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 			if (isValueVariable) value = '-' + value
 			else value = -1 * value 
 		
-		//need to convert decimals
-		//need async fetch
-		//https://gomint.me/api/token/getTokenInfoMirror.php?onecell&field=decimals&network=$network&tokenId=$tokenId
+		let decimals = getDecimals(network, tokenId)
+		//console.log(`decimals = ${decimals}`)
+		if (!decimals && decimals !== 0) {
+			window.alert('Sorry, there was an error fetching the token decimals');
+			return false;
+		}
+				
+		value = value * Math.pow(10, decimals)
 		
 		return {tokenId, accountId, value}
 		
@@ -346,8 +352,29 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	}
 
 
-//https://gomint.me/api/token/getTokenInfoMirror.php?onecell&field=decimals&network=$network&tokenId=
+// ┌─┐┌─┐┌┬┐  ┌┬┐┌─┐┌─┐┬┌┬┐┌─┐┬  ┌─┐  ┌─┐┌─┐┬─┐  ┌─┐  ┌┬┐┌─┐┬┌─┌─┐┌┐┌
+// │ ┬├┤  │    ││├┤ │  ││││├─┤│  └─┐  ├┤ │ │├┬┘  ├─┤   │ │ │├┴┐├┤ │││
+// └─┘└─┘ ┴   ─┴┘└─┘└─┘┴┴ ┴┴ ┴┴─┘└─┘  └  └─┘┴└─  ┴ ┴   ┴ └─┘┴ ┴└─┘┘└┘
+// get decimals for a token
 
+	function getDecimals(network, tokenId) {
+	  let url = (network == 'mainnet') ? 'https://mainnet-public' : `https://${network}`
+	  url += `.mirrornode.hedera.com/api/v1/tokens/${tokenId}`
+	  
+	  const request = new XMLHttpRequest()
+	  //console.log(url)
+	  request.open('GET', url, false)  // false makes the request synchronous
+	  request.send(null)
+
+	  if (request.status === 200) {
+		try {
+		  return JSON.parse(request.responseText).decimals
+		} catch (e) {
+		  console.error('Could not parse JSON:', e)
+		}
+	  } else console.error('Request failed:', request.status, request.statusText)
+	  return null
+	}
 
 
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ╔╗╔╔═╗╔╦╗  ┌┬┐┬─┐┌─┐┌┐┌┌─┐┌─┐┌─┐┬─┐
