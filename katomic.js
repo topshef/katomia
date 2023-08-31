@@ -4,7 +4,6 @@
 
 	let isSumValidationNeeded = true // if variables are used, flip this to false
 
-
 	// ┌─┐┌─┐┌─┐┌─┐  ┬  ┌─┐┌─┐┌┬┐
 	// ├─┘├─┤│ ┬├┤   │  │ │├─┤ ││
 	// ┴  ┴ ┴└─┘└─┘  ┴─┘└─┘┴ ┴─┴┘
@@ -306,7 +305,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 		let isValueVariable = /\{[a-zA-Z0-9_-]+\}/.test(value)
 		if (isValueVariable) isSumValidationNeeded = false 
-		
+	
 		if (verb == 'sends') 
 			if (isValueVariable) value = '-' + value
 			else value = -1 * value 
@@ -322,13 +321,20 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// detect FT transfer	
 	function detectTransferFT(line) {
 		//const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
-		const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
+		//const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
+		const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[a-z0-9_-]+}) (?<verb>receives|sends) (?<value>[0-9.]+|{[a-z0-9_-]+}) (?<unit>\d+\.\d+\.\d+|{[a-z0-9_-]+})$/i
+		
 		const matches = line.match(pattern)
 		if (!matches) return false
 		
-		let [_, accountId, verb, value, tokenId] = matches
-		if (verb == 'sends') value = -1 * value 
+		let { accountId, verb, value, tokenId } = matches.groups
+
+		let isValueVariable = /\{[a-zA-Z0-9_-]+\}/.test(value)
+		if (isValueVariable) isSumValidationNeeded = false 
 		
+		if (verb == 'sends') 
+			if (isValueVariable) value = '-' + value
+			else value = -1 * value 
 		
 		//need to convert decimals
 		//need async fetch
@@ -513,7 +519,10 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 		sumHbar = parseFloat(sumHbar.toFixed(8))
 		
-		if (isSumValidationNeeded && sumHbar != 0) {
+		
+	  if (isSumValidationNeeded) { // if variables found in any transfers, skip validation
+			
+		if (sumHbar != 0) {
 			document.getElementById('bannerNotice').innerHTML = `⚠️ Hbar transfers must sum to zero`  
 			return false
 		}
@@ -530,7 +539,9 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 			document.getElementById('bannerNotice').innerHTML = `⚠️ FT transfers must sum to zero for token ${tokenId}`  
 			return false
 		  }
-		}
+		  
+	    }
+	  }
 		
 		return true
 	}
