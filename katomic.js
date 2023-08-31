@@ -305,7 +305,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 		let isValueVariable = /\{[a-zA-Z0-9_-]+\}/.test(value)
 		if (isValueVariable) isSumValidationNeeded = false 
-	
+		
 		if (verb == 'sends') 
 			if (isValueVariable) value = '-' + value
 			else value = -1 * value 
@@ -322,7 +322,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	function detectTransferFT(line) {
 		//const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
 		//const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
-		const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[a-z0-9_-]+}) (?<verb>receives|sends) (?<value>[0-9.]+|{[a-z0-9_-]+}) (?<unit>\d+\.\d+\.\d+|{[a-z0-9_-]+})$/i
+		const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[a-z0-9_-]+}) (?<verb>receives|sends) (?<value>[0-9.]+|{[a-z0-9_-]+}) (?<tokenId>\d+\.\d+\.\d+|{[a-z0-9_-]+})$/i
 		
 		const matches = line.match(pattern)
 		if (!matches) return false
@@ -368,7 +368,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		//const [_, sender, tokenId, serial, receiver] = matches
 		let { sender, tokenId, serial, receiver } = matches.groups
 		
-		if (!/^(\d+|\d+to\d+)$/.test(serial)) return false
+		if (!/^(\d+|\d+to\d+|{[a-z0-9_-]+})$/.test(serial)) return false
 		
 		return {sender, tokenId, serial, receiver}
 		
@@ -393,21 +393,21 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	
 	// inject known alias into line
 	function injectAlias(line, aliases) {
-		let pattern = /^([a-zA-Z0-9\._-]+)\s+(sends|receives)\s+(.+)$/;
-		if (!pattern.test(line)) return line;
+		let pattern = /^([a-zA-Z0-9\._-]+)\s+(sends|receives)\s+(.+)$/
+		if (!pattern.test(line)) return line
 		for (let alias in aliases) 
-			line = line.replace(new RegExp("\\b" + alias + "\\b", 'g'), aliases[alias]);
-		return line;
+			line = line.replace(new RegExp("\\b" + alias + "\\b", 'g'), aliases[alias])
+		return line
 	}
 
 	//todo build in account check using 5 char checksum HIP15 #1
 	function detectAlias(line) {
-	  const pattern = /^([a-zA-Z0-9_-]+) is (\d+\.\d+\.\d+)$/;
-	  const matches = line.match(pattern);
-	  if (!matches) return false;
-	  const alias = matches[1];
-	  const hac = matches[2];
-	  return { [alias]: hac };
+	  const pattern = /^([a-zA-Z0-9_-]+) is (\d+\.\d+\.\d+)$/
+	  const matches = line.match(pattern)
+	  if (!matches) return false
+	  const alias = matches[1]
+	  const hac = matches[2]
+	  return { [alias]: hac }
 	}
 
 
@@ -533,10 +533,12 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		for (const transfer of deal.addTokenTransfer) {
 			if (!sumFT[transfer.tokenId]) sumFT[transfer.tokenId] = 0
 			sumFT[transfer.tokenId] += parseFloat(transfer.value)
+			//console.log(`value x token ${transfer.value} x ${transfer.tokenId} ` + parseFloat(transfer.value))
 		}
 
 		for (let tokenId in sumFT) {
-		  if (sumFT[tokenId] != 0) {
+		  if (Math.abs(sumFT[tokenId]) > Math.pow(10, -10)) {
+			  console.log('sum is ' +  sumFT[tokenId])
 			document.getElementById('bannerNotice').innerHTML = `⚠️ FT transfers must sum to zero for token ${tokenId}`  
 			return false
 		  }
