@@ -299,13 +299,23 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		//const pattern1 = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (hbar|h)$/
 		//const pattern2 = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ({[a-z0-9_-]+}) (hbar|h)$/
 		//const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) (([0-9.]+)|({[a-z0-9_-]+})) (hbar|h)$/
+		/*
 		const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) (([0-9.]+)|({[a-z0-9_-]+})) (hbar|h)$/i
 
 		const matches = line.match(pattern)
 		if (!matches) return false
 		
 		let [_, accountId, verb, value, unit] = matches
-		
+		*/
+
+		const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+) (?<verb>receives|sends) (?<value>[0-9.]+|{[a-z0-9_-]+}) (?<unit>hbar|h)$/i
+
+		const matches = line.match(pattern)
+		if (!matches) return false
+
+		// Access named groups via `matches.groups`
+		const { accountId, verb, value, unit } = matches.groups
+
 		let isVariable = /\{[a-zA-Z0-9_-]+\}/.test(value)
 		if (isVariable) isSumValidationNeeded = false 
 		
