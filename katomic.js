@@ -359,13 +359,14 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		//const pattern = /^(\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?:-|#)(\d+) to (\d+\.\d+\.\d+)$/;
 		//const pattern = /^(\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?: ?[-#])(\d+) to (\d+\.\d+\.\d+)$/
 		//const pattern = /^(buyer|\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?: ?[-#])(\d+) to (buyer|\d+\.\d+\.\d+)$/
-		const pattern = /^(buyer|\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?: ?[-#])(\S+) to (buyer|\d+\.\d+\.\d+)$/
-
-
+		//const pattern = /^(buyer|\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?: ?[-#])(\S+) to (buyer|\d+\.\d+\.\d+)$/
+		const pattern = /^(?<sender>\d+\.\d+\.\d+|{[a-z0-9_-]+}) sends(?: NFT)? (?<tokenId>\d+\.\d+\.\d+|{[a-z0-9_-]+})(?: ?[-#])(?<serial>\S+) to (?<receiver>\d+\.\d+\.\d+|{[a-z0-9_-]+})$/i
+		
 		const matches = line.match(pattern)
 		if (!matches) return false
 		
-		const [_, sender, tokenId, serial, receiver] = matches
+		//const [_, sender, tokenId, serial, receiver] = matches
+		let { sender, tokenId, serial, receiver } = matches.groups
 		
 		if (!/^(\d+|\d+to\d+)$/.test(serial)) return false
 		
