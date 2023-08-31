@@ -296,31 +296,19 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 	function detectTransferHbar(line) {
 		//either entity format 0.0.12345, or {some_variable}
-		//const pattern1 = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (hbar|h)$/
-		//const pattern2 = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ({[a-z0-9_-]+}) (hbar|h)$/
-		//const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) (([0-9.]+)|({[a-z0-9_-]+})) (hbar|h)$/
-		/*
-		const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) (([0-9.]+)|({[a-z0-9_-]+})) (hbar|h)$/i
-
-		const matches = line.match(pattern)
-		if (!matches) return false
+		const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[a-z0-9_-]+}) (?<verb>receives|sends) (?<value>[0-9.]+|{[a-z0-9_-]+}) (?<unit>hbar|h)$/i
+		// buyer could be dropped - in for legacy purposes (gomint)
 		
-		let [_, accountId, verb, value, unit] = matches
-		*/
-
-		const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+) (?<verb>receives|sends) (?<value>[0-9.]+|{[a-z0-9_-]+}) (?<unit>hbar|h)$/i
-
 		const matches = line.match(pattern)
 		if (!matches) return false
 
-		// Access named groups via `matches.groups`
-		const { accountId, verb, value, unit } = matches.groups
+		let { accountId, verb, value, unit } = matches.groups
 
-		let isVariable = /\{[a-zA-Z0-9_-]+\}/.test(value)
-		if (isVariable) isSumValidationNeeded = false 
+		let isValueVariable = /\{[a-zA-Z0-9_-]+\}/.test(value)
+		if (isValueVariable) isSumValidationNeeded = false 
 		
 		if (verb == 'sends') 
-			if (isVariable) value = '-' + value
+			if (isValueVariable) value = '-' + value
 			else value = -1 * value 
 		
 		
