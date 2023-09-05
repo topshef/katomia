@@ -247,10 +247,11 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   └─┘└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ 
 	// detect comments
 	function detectComment(line) {
-	  if (line.startsWith('#')) return true;
-	  if (line.startsWith('//')) return true;
-	  if (line.startsWith('/*') && line.endsWith('*/')) return true;
-	  return false;
+	  if (line.startsWith('#')) return true
+	  if (line.startsWith('//')) return true
+	  if (line.startsWith('/*') && line.endsWith('*/')) return true
+	  // maybe refactor to allow comment at end of line too
+	  return false
 	}
 
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌┐┌┌─┐┌┬┐┬ ┬┌─┐┬─┐┬┌─
@@ -387,7 +388,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		//const pattern = /^(\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?: ?[-#])(\d+) to (\d+\.\d+\.\d+)$/
 		//const pattern = /^(buyer|\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?: ?[-#])(\d+) to (buyer|\d+\.\d+\.\d+)$/
 		//const pattern = /^(buyer|\d+\.\d+\.\d+) sends(?: NFT)? (\d+\.\d+\.\d+)(?: ?[-#])(\S+) to (buyer|\d+\.\d+\.\d+)$/
-		const pattern = /^(?<sender>\d+\.\d+\.\d+|{[a-z0-9_-]+}) sends(?: NFT)? (?<tokenId>\d+\.\d+\.\d+|{[a-z0-9_-]+})(?: ?[-#])(?<serial>\S+) to (?<receiver>\d+\.\d+\.\d+|{[a-z0-9_-]+})$/i
+		//const pattern = /^(?<sender>\d+\.\d+\.\d+|{[a-z0-9_-]+}) sends(?: NFT)? (?<tokenId>\d+\.\d+\.\d+|{[a-z0-9_-]+})(?: ?[-#])(?<serial>\S+) to (?<receiver>\d+\.\d+\.\d+|{[a-z0-9_-]+})$/i
+		const pattern = /^(?<sender>\d+\.\d+\.\d+|buyer|{[a-z0-9_-]+}) sends(?: NFT)? (?<tokenId>\d+\.\d+\.\d+|{[a-z0-9_-]+})(?: ?[-#])(?<serial>\S+) to (?<receiver>\d+\.\d+\.\d+|buyer|{[a-z0-9_-]+})$/i
 		
 		const matches = line.match(pattern)
 		if (!matches) return false
@@ -420,7 +422,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	
 	// inject known alias into line
 	function injectAlias(line, aliases) {
-		let pattern = /^([a-zA-Z0-9\._-]+)\s+(sends|receives)\s+(.+)$/
+		let pattern = /^({[a-z0-9_-]+}|[a-zA-Z0-9\._-]+)\s+(sends|receives)\s+(.+)$/i
 		if (!pattern.test(line)) return line
 		for (let alias in aliases) 
 			line = line.replace(new RegExp("\\b" + alias + "\\b", 'g'), aliases[alias])
@@ -429,7 +431,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 	//todo build in account check using 5 char checksum HIP15 #1
 	function detectAlias(line) {
-	  const pattern = /^([a-zA-Z0-9_-]+) is (\d+\.\d+\.\d+)$/
+	  const pattern = /^([a-zA-Z0-9_-]+) is (\d+\.\d+\.\d+)$/i
 	  const matches = line.match(pattern)
 	  if (!matches) return false
 	  const alias = matches[1]
@@ -602,8 +604,10 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		//check transfers
 		const isValid = await verifyData(deal)
 		if (!isValid) return
-		   
-		const response = await fetch('https://kpos.uk/deal/write/?json', {
+		
+		const urlWriteDeal = CONFIG[deal.network].urlWriteDeal ?? 'https://kpos.uk/deal/write/?json'
+		
+		const response = await fetch(urlWriteDeal, {
 		method: 'POST',
 		headers: {
 		  'Content-Type': 'application/json'
