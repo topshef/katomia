@@ -80,7 +80,7 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
   <!-- <script src="katomic.js"></script> --> 
   <script>
     var PATH_CONFIG = "config.json?v=<?php echo filemtime('config.json'); ?>"
-console.log('PATH_CONFIG=',PATH_CONFIG)
+	console.log('PATH_CONFIG=',PATH_CONFIG)
   </script>
 
   <script src="typing.js"></script>

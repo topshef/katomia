@@ -4,7 +4,7 @@
 
 	let network =''
 	let isSumValidationNeeded = true // if variables are used, flip this to false
-	const PATH_CONFIG = 'config.json'
+	//const PATH_CONFIG = 'config.json'
 
 	// ┌─┐┌─┐┌─┐┌─┐  ┬  ┌─┐┌─┐┌┬┐
 	// ├─┘├─┤│ ┬├┤   │  │ │├─┤ ││
