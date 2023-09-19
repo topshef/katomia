@@ -337,16 +337,21 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		if (verb == 'sends') 
 			if (isValueVariable) value = '-' + value
 			else value = -1 * value 
-		
-		let decimals = getDecimals(network, tokenId)
-		//console.log(`decimals = ${decimals}`)
-		if (!decimals && decimals !== 0) {
-			window.alert('Sorry, there was an error fetching the token decimals');
-			return false;
+
+		let isTokenVariable = /\{[a-zA-Z0-9_-]+\}/.test(tokenId)
+		if (isTokenVariable) {
+			window.alert('Warning: token ID is a variable, so amount must be injected as a whole integer. Proceed with caution')
+		} else {
+			let decimals = getDecimals(network, tokenId)
+			//console.log(`decimals = ${decimals}`)
+			if (!decimals && decimals !== 0) {
+				window.alert('Sorry, there was an error fetching the token decimals')
+				return false
+			}
+					
+			value = value * Math.pow(10, decimals)			
 		}
-				
-		value = value * Math.pow(10, decimals)
-		
+
 		return {tokenId, accountId, value}
 		
 		//matching https://docs.hedera.com/hedera/sdks-and-apis/sdks/tokens/transfer-tokens
