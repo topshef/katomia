@@ -42,7 +42,9 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 
     <textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
 
-  
+	<span class='dev'>Enter urlWriteDeal (the url called when you hit 'Publish')</span>
+	<input class='dev' id="urlWriteDeal" placeholder="urlWriteDeal eg https://kpos.uk/deal/write/?json" value=""></input>
+
   <div id='buttonsContainer'>
 	  <div id='btnClear' class='tooltip' data-tooltip="Clear"><img src='trash.png' alt='trash' height="18px" style="padding-right: 10px"></div>
 	  <div id='btnCopyPermalink' class='tooltip' data-tooltip="Copy to Clipboard">Copy permalink</div>

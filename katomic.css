@@ -14,22 +14,44 @@
 	:root {
 	  --max-width: 500px; /* Set a CSS variable */
 	}
-		
-    textarea {
+
+
+	.dev {
+		display: none;
+	}
+
+  #kscriptTemplateOptions, input {
+    padding: 5px;
+	margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+
+ 	
+    textarea, input {
+	  margin: 10px;
       padding: 10px;
 	  width: calc(min(70%, var(--max-width))); /* allows user to resize */
 	  /* width: 70%; */
 	  /* max-width: 500px; */
-      height: 14em;
+     
       resize: both;
       border-radius: 8px; /* Round the corners of the textarea */
       font-family: 'Poppins', sans-serif;
 	  font-size: 16px;
       font-weight: bold;
-	  padding: 10px; /* Add padding to the input box */
-	
     }
 
+   textarea {
+		height: 14em;
+	}
+	
+	input {
+		width: 90%
+		
+	}
+		
 
 	textarea.resizable {
 	  width: auto;
@@ -125,11 +147,3 @@
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
 
-
-  #kscriptTemplateOptions {
-    padding: 5px;
-	margin: 10px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-  }
-  

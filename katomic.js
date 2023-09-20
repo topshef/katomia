@@ -16,6 +16,8 @@
 	  handleLogoImage()
 	  CONFIG = await getConfig()
 	  console.log('config=', CONFIG)
+	  document.getElementById('urlWriteDeal').value = CONFIG['testnet'].urlWriteDeal ?? 'https://kpos.uk/deal/write/?json'
+	  
 	  handleQueryParams() // no need to await because we're not (yet) processing any response or chaining anything after this
 	})
 
@@ -71,7 +73,11 @@
 	}
 	else document.getElementById('myInputKscript').value = kscript // fallback
 	  
-	
+	if (urlQuery.has('dev'))
+	  document.querySelectorAll('.dev').forEach(function(element) {
+		element.style.display = 'block'
+	  })
+  
 
 	// ┌─┐┌─┐┬─┐┌─┐┌─┐  ┬┌─┌─┐┌┬┐┌─┐┌┬┐┬┌─┐  ┌─┐┌─┐┬─┐┬┌─┐┌┬┐
 	// ├─┘├─┤├┬┘└─┐├┤   ├┴┐├─┤ │ │ ││││││    └─┐│  ├┬┘│├─┘ │ 
@@ -609,10 +615,17 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		//check transfers
 		const isValid = await verifyData(deal)
 		if (!isValid) return
+
+		// allow katomic to write the deal to a custom endpoint
+		// use page with ?dev to edit urlWriteDeal on the fly 
+		// and/or set it in the config
+		const urlWriteDeal = document.getElementById('urlWriteDeal').value ?? CONFIG[deal.network].urlWriteDeal ?? 'https://kpos.uk/deal/write'
 		
-		const urlWriteDeal = CONFIG[deal.network].urlWriteDeal ?? 'https://kpos.uk/deal/write/?json'
+		console.log(`publishData is using urlWriteDeal = ${urlWriteDeal}`)
 		
-		const response = await fetch(urlWriteDeal, {
+		// multiple responses might be received, check the response object elements for results of each
+		// todo replace this with appnet propagation
+		const responses = await fetch(urlWriteDeal, {
 		method: 'POST',
 		headers: {
 		  'Content-Type': 'application/json'
@@ -620,35 +633,51 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		body: JSON.stringify(deal) // Send the processed data as JSON
 		})
 
-		const result = await response.json()
+		const results = await responses.json()
+		//console.log(`urlWriteDeal result =`, results)
+		// todo, if we need legacy compatibilty, first detect the format of the response
+		// but i don't think this is needed
 
-		const { network, dealId, isExisting } = result
-
-		// display result to user
-		let html = isExisting ? 'Existing deal found.' : 'Published!'
-
-		//let domain = network == 'mainnet' ? 'swap.kpay.live' : 'labs4.shop.gomint.me'
-		//let redirectURL = `https://${domain}/m/?dealonly&detail&dealId=${dealId}&starttime=5mins`
-		let dealId_short = dealId.substring(0, 6).toUpperCase()
-
+		let html = ''
 		
-		let urlPublish = CONFIG[network].urlPublish
+		const urlPublishTemplate = CONFIG[deal.network].urlPublish
+		const starttime = urlQuery.get('starttime') ?? ''
+			
+		// loop thru result from each saas domain
+		Object.keys(results).forEach((saas_domain) => {
+			const { code, result } = results[saas_domain]
+			const { status } = result
+			
+			let dealId
+			if (status === 'success') {
+				dealId = result.data.dealId
+				html += `Published to ${saas_domain}`
+			}
+			
+			if (status === 'error') {
+				const regex = /[0-9a-fA-F]{32,}$/
+				const message = result.message
+				const match = message.match(regex)
+				if (match) dealId = match[0]
+				html += `Deal already exists on ${saas_domain}`
+			}
+			
+			if (!dealId) {
+				html += `Failed to read dealId from ${saas_domain}<BR>`
+				return
+			}
+			
+			const dealId_short = dealId.substring(0, 6).toUpperCase()
+			
+			const urlPublish = urlPublishTemplate.replace('${dealId}', dealId)
+			
+			html += ` <a href="${urlPublish}&starttime=${starttime}" target="_blank">${dealId_short}</a>`
+			html += `<br>`
 
-		urlPublish = urlPublish.replace('${dealId}', dealId)
-
-		let starttime = urlQuery.get('starttime') ?? ''
-
-		let link = `<a href="${urlPublish}&starttime=${starttime}" target="_blank">${dealId_short}</a>`;
-
-		//let link = `<a href="https://${domain}/m/?dealonly&detail&dealId=${dealId}&starttime=5mins" target="_blank">${dealId_short}</a>`;
-		html += ` See ref ${link}`;
-		//html += ' (refactor test)'
-
-	  // todo.. switch to json and handle here
-	  //document.getElementById('bannerNotice').innerHTML =  responseText
+		})
+					
 	  document.getElementById('bannerNotice').innerHTML =  html
-	  //const dealId =  (responseText.match(/([0-9a-fA-F]{6,})/) || [])[1];
-	  
+
 	  return {network, dealId, urlPublish}
 	  
     }
