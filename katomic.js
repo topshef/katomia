@@ -643,12 +643,15 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		const urlPublishTemplate = CONFIG[deal.network].urlPublish
 		const starttime = urlQuery.get('starttime') ?? ''
 			
+		let dealId
+		let urlPublish
+		
 		// loop thru result from each saas domain
 		Object.keys(results).forEach((saas_domain) => {
 			const { code, result } = results[saas_domain]
 			const { status } = result
 			
-			let dealId
+			
 			if (status === 'success') {
 				dealId = result.data.dealId
 				html += `Published to ${saas_domain}`
@@ -669,7 +672,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 			
 			const dealId_short = dealId.substring(0, 6).toUpperCase()
 			
-			const urlPublish = urlPublishTemplate.replace('${dealId}', dealId)
+			urlPublish = urlPublishTemplate.replace('${dealId}', dealId)
 			
 			html += ` <a href="${urlPublish}&starttime=${starttime}" target="_blank">${dealId_short}</a>`
 			html += `<br>`
@@ -677,7 +680,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		})
 					
 	  document.getElementById('bannerNotice').innerHTML =  html
-
+      //console.log('deal=', deal)
+	  const network = deal.network
 	  return {network, dealId, urlPublish}
 	  
     }
