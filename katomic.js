@@ -284,7 +284,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 	function detectDisplayParameter(line) {
 	  //const regex = /display\s+(\w+)\s+(.+)/;
-      const regex = /display\s+(title|description|thumbnail|button)\s+(.+)/
+      const regex = /display\s+(title|description|thumbnail|button|label)\s+(.+)/
 	  const matches = line.match(regex)
 
 	  if (matches) {
