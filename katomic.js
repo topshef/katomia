@@ -100,8 +100,14 @@
       // lines.forEach(line => {
 	  const pendingLines = lines.filter(line => {
 
+        let comment
+        //[line, comment] = line.split(/\/\/(.+)/)  // split by //
+        [line, comment] = line.split(/(?:\/\/|#)(.+)/)   // split by // or #
 
-		if (line.trim() === '') return false // drop empty lines
+        if (comment) comments.push(comment.trim())
+        line = line.trim()
+
+        if (!line) return false // drop empty lines
 		
 		result = detectComment(line)
 		if (result) {
