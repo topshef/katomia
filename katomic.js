@@ -16,8 +16,7 @@
 	  handleLogoImage()
 	  CONFIG = await getConfig()
 	  console.log('config=', CONFIG)
-	  document.getElementById('urlWriteDeal').value = CONFIG['testnet'].urlWriteDeal ?? 'https://kpos.uk/deal/write/?json'
-	  
+      if (urlQuery.has('dev')) document.getElementById('urlWriteDeal').value = CONFIG['testnet'].urlWriteDeal || 'https://kpos.uk/deal/write/?json'
 	  handleQueryParams() // no need to await because we're not (yet) processing any response or chaining anything after this
 	})
 
@@ -77,7 +76,7 @@
 	  document.querySelectorAll('.dev').forEach(function(element) {
 		element.style.display = 'block'
 	  })
-  
+
 
 	// ┌─┐┌─┐┬─┐┌─┐┌─┐  ┬┌─┌─┐┌┬┐┌─┐┌┬┐┬┌─┐  ┌─┐┌─┐┬─┐┬┌─┐┌┬┐
 	// ├─┘├─┤├┬┘└─┐├┤   ├┴┐├─┤ │ │ ││││││    └─┐│  ├┬┘│├─┘ │ 
@@ -112,7 +111,7 @@
 		
         result = detectNetwork(line)
 		if (result) {
-			network = result
+			network = result  // global var
 			return false
 		}
 		
@@ -620,7 +619,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		// allow katomic to write the deal to a custom endpoint
 		// use page with ?dev to edit urlWriteDeal on the fly 
 		// and/or set it in the config
-		const urlWriteDeal = document.getElementById('urlWriteDeal').value ?? CONFIG[deal.network].urlWriteDeal ?? 'https://kpos.uk/deal/write'
+        console.log(`network is ${network}`)
+        const urlWriteDeal = document.getElementById('urlWriteDeal').value || CONFIG[network].urlWriteDeal || 'https://kpos.uk/deal/write'
 		
 		console.log(`publishData is using urlWriteDeal = ${urlWriteDeal}`)
 		
@@ -682,7 +682,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 					
 	  document.getElementById('bannerNotice').innerHTML =  html
       //console.log('deal=', deal)
-	  const network = deal.network
+	  //const network = deal.network
 	  return {network, dealId, urlPublish}
 	  
     }
