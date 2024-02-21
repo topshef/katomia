@@ -98,22 +98,12 @@
 	  
 	  let result
       // lines.forEach(line => {
-	  const pendingLines = lines.filter(line => {
+	  const pendingLines = lines.filter(rawline => {
 
         let comment
-        //[line, comment] = line.split(/\/\/(.+)/)  // split by //
-        [line, comment] = line.split(/(?:\/\/|#)(.+)/)   // split by // or #
-
-        if (comment) comments.push(comment.trim())
-        line = line.trim()
-
-        if (!line) return false // drop empty lines
-		
-		result = detectComment(line)
-		if (result) {
-			comments.push(line)
-			return false
-		}
+        [line, comment] = splitComment(rawline)
+        if (comment) comments.push(rawline)
+        if (!line) return false // skip empty lines
 		
         result = detectNetwork(line)
 		if (result) {
@@ -135,7 +125,7 @@
 			return false
 		}
 
-		userInput = line
+		userInput = rawline
 		line = injectAlias(line, alias)
 		console.log('line is' ,line)
 		
@@ -252,17 +242,15 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		return condensed.filter(Boolean)
 	}
 
-
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┌┬┐┌┬┐┌─┐┌┐┌┌┬┐
 	 // ││├┤  │ ├┤ │   │   │  │ │││││││├┤ │││ │ 
 	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   └─┘└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ 
 	// detect comments
-	function detectComment(line) {
-	  if (line.startsWith('#')) return true
-	  if (line.startsWith('//')) return true
-	  if (line.startsWith('/*') && line.endsWith('*/')) return true
-	  // maybe refactor to allow comment at end of line too
-	  return false
+	function splitComment(line) {
+      let comment
+      [line, comment] = line.split(/(?:\/\/|#)(.+)/)   // split by // or #
+      line = line.trim()    
+	  return [line, comment]
 	}
 
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌┐┌┌─┐┌┬┐┬ ┬┌─┐┬─┐┬┌─
