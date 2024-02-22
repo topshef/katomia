@@ -94,6 +94,7 @@
 
 	  //advanced options
 	  let parameters = {}
+      let constants = {}
 	  let conditions = []
 	  
 	  let result
@@ -166,7 +167,13 @@
 			parameters = {...parameters, ...result}
 			return false
 		}
-				
+
+		result = detectConstants(line)
+		if (result) {
+			constants = {...constants, ...result}
+			return false
+		}
+        
 		return true
       })
 
@@ -191,7 +198,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 */
 	  
-      return {network, display, alias, parameters, conditions, addHbarTransfer, addTokenTransfer, addNftTransfer, pendingLines, comments, userInput: data} 
+      return {network, display, alias, parameters, constants, conditions, addHbarTransfer, addTokenTransfer, addNftTransfer, pendingLines, comments, userInput: data} 
     }
 
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┬─┐┌─┐┌┬┐┌─┐┌┬┐┌─┐┬─┐┌─┐
@@ -207,6 +214,15 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 			return { [matches.groups.fieldName]: matches.groups.fieldValue }
 	}
 
+    // match constants (any values that must be permanently fixed by the deal)
+	function detectConstants(line) {
+		const regex = /constants\s+(?<fieldName>[\w]+)\s+(?<fieldValue>.+)/
+		const matches = line.match(regex)
+		if (matches)
+			return { [matches.groups.fieldName]: matches.groups.fieldValue }
+	}
+    
+    
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┌┐┌┌┬┐┬┌┬┐┬┌─┐┌┐┌┌─┐
 	 // ││├┤  │ ├┤ │   │   │  │ ││││ │││ │ ││ ││││└─┐
 	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   └─┘└─┘┘└┘─┴┘┴ ┴ ┴└─┘┘└┘└─┘
