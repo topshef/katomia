@@ -263,9 +263,23 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   └─┘└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ 
 	// detect comments
 	function splitComment(line) {
+        
+        if (line.includes('://')) return [line.trim(), undefined] // don't allow comments if url on the line
+
+        const parts = line.split(/(\/\/|#(?![1-9]))(.+)/)
+
+        if (parts.length > 1) return [parts[0].trim(), parts[2]]
+
+        return [line.trim(), undefined]
+
+
+
       let comment
       //[line, comment] = line.split(/(?:\/\/|#)(.+)/)   // split by // or #
-      [line, comment] = line.split(/(?:\/\/|#(?![1-9]))(.+)/) // dont split if there's a digit 1-9 immediately after the # ie NFT serial
+      //[line, comment] = line.split(/(?:\/\/|#(?![1-9]))(.+)/) // dont split if there's a digit 1-9 immediately after the # ie NFT serial
+        [line, comment] = line.split(/(\/\/|#(?![1-9]))(.+)/)   // no change?
+
+
       line = line.trim()    
 	  return [line, comment]
 	}
