@@ -83,9 +83,13 @@
 	// ┴  ┴ ┴┴└─└─┘└─┘  ┴ ┴┴ ┴ ┴ └─┘┴ ┴┴└─┘  └─┘└─┘┴└─┴┴   ┴ 
 	// parse katomic script
 	
+    //let alias = {} // allow other functions to use this data
+    let errorMessages = []
+    
     function parseKatomic(data) {
+      const alias = {}
+      errorMessages = []
 	  const lines = data.split('\n')
-	  const alias = {}
 	  const addHbarTransfer = []
 	  const addTokenTransfer = []
 	  const addNftTransfer = []
@@ -95,6 +99,7 @@
 	  //advanced options
 	  let parameters = {}
       let constants = {}
+      let api = {}
 	  let conditions = []
 	  
 	  let result
@@ -156,21 +161,33 @@
 			return false
 		}
 		
+        //todo consider condensing into loop
+
+        // constants fixed by the deal
+        result = detectKeyValuePair(line, 'constants')
+        if (result) {
+            constants = {...constants, ...result}
+            return false
+        }
+
+        // user injected parameters
+        result = detectKeyValuePair(line, 'parameters')
+        if (result) {
+            parameters = {...parameters, ...result}
+            return false
+        }
+
+        // external api calls eg fx rates
+        result = detectKeyValuePair(line, 'api')
+        if (result) {
+            api = {...api, ...result}
+            return false
+        }
+
+        // custom scripts to allow/deny deals
 		result = detectConditions(line)
 		if (result) {
 			conditions.push(result)
-			return false
-		}
-
-		result = detectParameters(line)
-		if (result) {
-			parameters = {...parameters, ...result}
-			return false
-		}
-
-		result = detectConstants(line)
-		if (result) {
-			constants = {...constants, ...result}
 			return false
 		}
         
@@ -198,30 +215,22 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 */
 	  
-      return {network, display, alias, parameters, constants, conditions, addHbarTransfer, addTokenTransfer, addNftTransfer, pendingLines, comments, userInput: data} 
+      return {network, display, alias, parameters, constants, api, conditions, addHbarTransfer, addTokenTransfer, addNftTransfer, pendingLines, comments, userInput: data} 
     }
 
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┬─┐┌─┐┌┬┐┌─┐┌┬┐┌─┐┬─┐┌─┐
 	 // ││├┤  │ ├┤ │   │   ├─┘├─┤├┬┘├─┤│││├┤  │ ├┤ ├┬┘└─┐
 	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   ┴  ┴ ┴┴└─┴ ┴┴ ┴└─┘ ┴ └─┘┴└─└─┘
-	// detect parameters
-	function detectParameters(line) {
-		// eg parameters user_code [enter promo code] text
-		// interim to match gomint
-		const regex = /parameters\s+(?<fieldName>[\w]+)\s+(?<fieldValue>.+)/
-		const matches = line.match(regex)
-		if (matches)
-			return { [matches.groups.fieldName]: matches.groups.fieldValue }
-	}
-
-    // match constants (any values that must be permanently fixed by the deal)
-	function detectConstants(line) {
-		const regex = /constants\s+(?<fieldName>[\w]+)\s+(?<fieldValue>.+)/
-		const matches = line.match(regex)
-		if (matches)
-			return { [matches.groups.fieldName]: matches.groups.fieldValue }
-	}
+	// detect parameters, constants, api links
     
+    function detectKeyValuePair(line, keyword) {  // coudl later add 3rd parameter regex condition for the field, default to .+
+        // Create a dynamic regex based on the keyword
+        const regex = new RegExp(`${keyword}\\s+(?<fieldName>[\\w]+)\\s+(?<fieldValue>.+)`)
+        const matches = line.match(regex)
+        if (matches)
+            return { [matches.groups.fieldName]: matches.groups.fieldValue }
+    }
+            
     
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌─┐┌─┐┌┐┌┌┬┐┬┌┬┐┬┌─┐┌┐┌┌─┐
 	 // ││├┤  │ ├┤ │   │   │  │ ││││ │││ │ ││ ││││└─┐
@@ -264,24 +273,14 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// detect comments
 	function splitComment(line) {
         
-        if (line.includes('://')) return [line.trim(), undefined] // don't allow comments if url on the line
+        if (line.includes('://')) return [line.trim(), undefined] // don't allow comments if url eg https://
 
-        const parts = line.split(/(\/\/|#(?![1-9]))(.+)/)
+        const parts = line.split(/(\/\/|#(?![1-9]))(.+)/) // split by // or # (unless # represents a serial)
 
         if (parts.length > 1) return [parts[0].trim(), parts[2]]
 
         return [line.trim(), undefined]
 
-
-
-      let comment
-      //[line, comment] = line.split(/(?:\/\/|#)(.+)/)   // split by // or #
-      //[line, comment] = line.split(/(?:\/\/|#(?![1-9]))(.+)/) // dont split if there's a digit 1-9 immediately after the # ie NFT serial
-        [line, comment] = line.split(/(\/\/|#(?![1-9]))(.+)/)   // no change?
-
-
-      line = line.trim()    
-	  return [line, comment]
 	}
 
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ┌┐┌┌─┐┌┬┐┬ ┬┌─┐┬─┐┬┌─
@@ -327,7 +326,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 	function detectTransferHbar(line) {
 		//either entity format 0.0.12345, or {some_variable}
-		const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[a-z0-9_-]+}) (?<verb>receives|sends) (?<value>[0-9.]+|{[a-z0-9_-]+}) (?<unit>hbar|h)$/i
+		//const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[a-z0-9_-]+}) (?<verb>receives|sends) (?<value>[0-9.]+|{[a-z0-9_-]+}) (?<unit>hbar|h)$/i
+        const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[a-z0-9_-]+}) (?<verb>receives|sends) (?<value>[\w\-+/*.{}]+) (?<unit>hbar|h)$/i
 		// buyer could be dropped - in for legacy purposes (gomint)
 		
 		const matches = line.match(pattern)
@@ -335,17 +335,29 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 		let { accountId, verb, value, unit } = matches.groups
 
-		let isValueVariable = /\{[a-zA-Z0-9_-]+\}/.test(value)
-		if (isValueVariable) isSumValidationNeeded = false 
-		
+        let isNumber = !isNaN(parseFloat(value))
+        
+        if (!isNumber) {
+            if (!isValidExpression(value)) return false
+            isSumValidationNeeded = false
+        }
+        
 		if (verb == 'sends') 
-			if (isValueVariable) value = '-' + value
-			else value = -1 * value 
+			if (isNumber) value = -1 * value
+            else value = '-' + value 
+        //if (verb == 'sends') value = '-' + value  // maybe could just do string instead
 		
 		
 		return {accountId, value}
 	}
 
+    // validate formula to ensure it can be processed safely
+    function isValidExpression(value) {
+        if (value.split('{').length !== value.split('}').length) return false // Mismatched braces
+        if ((value.match(/\{\w+\}/g) || []).length !== (value.match(/\{/g) || []).length) return false // Invalid parameter names
+        //insert more checks as needed
+        return true
+    }
 
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ╔═╗╔╦╗  ┌┬┐┬─┐┌─┐┌┐┌┌─┐┌─┐┌─┐┬─┐
 	 // ││├┤  │ ├┤ │   │   ╠╣  ║    │ ├┬┘├─┤│││└─┐├┤ ├┤ ├┬┘
@@ -354,34 +366,34 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	function detectTransferFT(line) {
 		//const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
 		//const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
-		const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[a-z0-9_-]+}) (?<verb>receives|sends) (?<value>[0-9.]+|{[a-z0-9_-]+}) (?<tokenId>\d+\.\d+\.\d+|{[a-z0-9_-]+})$/i
-		
+		//const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[a-z0-9_-]+}) (?<verb>receives|sends) (?<value>[0-9.]+|{[a-z0-9_-]+}) (?<tokenId>\d+\.\d+\.\d+|{[a-z0-9_-]+})$/i
+        const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[a-z0-9_-]+}) (?<verb>receives|sends) (?<value>[\w\-+/*.{}]+) (?<tokenId>\d+\.\d+\.\d+|{[a-z0-9_-]+})$/i
+        
 		const matches = line.match(pattern)
 		if (!matches) return false
 		
 		let { accountId, verb, value, tokenId } = matches.groups
 
-		let isValueVariable = /\{[a-zA-Z0-9_-]+\}/.test(value)
-		if (isValueVariable) isSumValidationNeeded = false 
-		
-		if (verb == 'sends') 
-			if (isValueVariable) value = '-' + value
-			else value = -1 * value 
-        
+        let isNumber = !isNaN(parseFloat(value))
+        if (!isNumber) {
+            if (!isValidExpression(value)) return false
+            isSumValidationNeeded = false
+        }     
+
+        if (verb == 'sends') 
+			if (isNumber) value = -1 * value
+            else value = '-' + value         
        
 
-		let isTokenVariable = /\{[a-zA-Z0-9_-]+\}/.test(tokenId)
-		if (isTokenVariable || isValueVariable)
-			window.alert('Warning: token ID or value is a variable, so amount must be injected as a whole integer. Proceed with caution')
-        else {
-			let decimals = getDecimals(network, tokenId)
-			//console.log(`decimals = ${decimals}`)
-			if (!decimals && decimals !== 0) {
-				window.alert('Sorry, there was an error fetching the token decimals')
-				return false
-			}
-            value = value * Math.pow(10, decimals)
-		}
+        let decimals = getDecimals(network, tokenId)
+        if (!decimals && decimals !== 0) {
+            errorMessages.push(`could not find decimals for token ${tokenId}`)
+            return false
+        }
+            
+        if (isNumber) value = value * Math.pow(10, decimals)
+        else window.alert('Warning: value is an expression, so amount must be injected as a whole integer. Proceed with caution')
+
 
 		return {tokenId, accountId, value}
 		
@@ -565,10 +577,11 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// check transfers
 	async function verifyData(deal) {
 	  
-		if (deal.pendingLines.length !== 0) {
-			const pending = deal.pendingLines.join('<br>');
+		if (deal.pendingLines.length !== 0 || errorMessages.length !== 0) {
+			const pending = deal.pendingLines.join('<br>')
+            const strErrorMessages = errorMessages.join('<br>')
 
-			document.getElementById('bannerNotice').innerHTML = `⚠️ Some lines were not understood - please check:<BR>${pending}`  
+			document.getElementById('bannerNotice').innerHTML = `⚠️ Some lines were not understood - please check:<BR>${pending}<BR>${strErrorMessages}`  
 			return false
 		 }
 		  
