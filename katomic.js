@@ -272,8 +272,11 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   └─┘└─┘┴ ┴┴ ┴└─┘┘└┘ ┴ 
 	// detect comments
 	function splitComment(line) {
-        
-        if (line.includes('://')) return [line.trim(), undefined] // don't allow comments if url eg https://
+
+        if (line.trim().startsWith('//') || line.trim().startsWith('#'))
+            return ['', line.trim()] // Consider the whole line as a comment
+    
+        if (line.includes('://')) return [line.trim(), undefined] // don't allow mid-line comments if url eg https://
 
         const parts = line.split(/(\/\/|#(?![1-9]))(.+)/) // split by // or # (unless # represents a serial)
 
