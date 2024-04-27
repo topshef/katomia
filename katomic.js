@@ -345,12 +345,11 @@ for(let i = 0; i < detectionFuncs.length; i++) {
             isSumValidationNeeded = false
         }
         
-		if (verb == 'sends') 
-			if (isNumber) value = -1 * value
-            else value = '-' + value 
-        //if (verb == 'sends') value = '-' + value  // maybe could just do string instead
-		
-		
+		// if (verb == 'sends') 
+			// if (isNumber) value = -1 * value
+            // else value = '-' + value 
+        if (verb == 'sends') value = '-' + value  // turns value into string but works for both
+
 		return {accountId, value}
 	}
 
