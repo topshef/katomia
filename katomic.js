@@ -294,7 +294,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  //const pattern = /we are on (\w+net)/
 	  //const pattern = /we are on (\w+net)/i;  // case insensitive
 	  //const pattern = /on (\w+net)/i
-	  const pattern = /(\w+net)\b/i
+	  //const pattern = /(\w+net)\b/i
+      const pattern = /(?:\s|^)(\w+net)(?=\s|$)/i  // only match if wrapped with spaces or line ending (to avoid conflict with urls eg in api)
 	  const match = line.match(pattern)
 	  
 	  //if (match) return match[1]
