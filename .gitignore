@@ -15,6 +15,10 @@ zz*
 *.json
 *.lock
 *.bak
+*.gz
+*.zip
+*.tar
+
 
 vendor/**
 scratchpad
