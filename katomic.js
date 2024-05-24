@@ -61,7 +61,7 @@
 	// grab url query
 
 	// Get the URL parameter value
-	const urlQuery = new URLSearchParams(window.location.search)
+	//const urlQuery = new URLSearchParams(window.location.search)
 	const kscript = urlQuery.get('kscript')
 
 	// Set the value of the textarea
@@ -70,7 +70,8 @@
 		  let typingspeed = urlQuery.get('typingspeed') ?? 10
 		  typingNow = simulateTyping('myInputKscript', kscript, {speed: typingspeed})
 	}
-	else document.getElementById('myInputKscript').value = kscript // fallback
+	//else document.getElementById('myInputKscript').value = kscript // fallback
+  else setKatomicScript(kscript) // fallback
 	  
 	if (urlQuery.has('dev'))
 	  document.querySelectorAll('.dev').forEach(function(element) {
@@ -500,21 +501,33 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	document.getElementById('btnPreview').addEventListener('click', handlePreview);
 
     async function handlePreview() {
-      const katomicScript = document.getElementById('myInputKscript').value
+      const katomicScript = getKatomicScript()
+      console.log("katomicScript=",katomicScript)
       const deal = parseKatomic(katomicScript)
-	  
-	  const previewDiv = document.getElementById('preview')
-	  previewDiv.innerText = JSON.stringify(deal, null, 2)
-	  previewDiv.style.display = 'block'
-	  
-	  updateKatomicURL() // update the URL so it can be bookmarked or copied
-	  
-	 //check transfers
-	 const isValid = await verifyData(deal)
-	 if (isValid) document.getElementById('bannerNotice').innerHTML = 'Looks good! Ready to publish ☑️'
 
-	  return deal
+      const previewDiv = document.getElementById('preview')
+      previewDiv.innerText = JSON.stringify(deal, null, 2)
+      previewDiv.style.display = 'block'
+
+      updateKatomicURL() // update the URL so it can be bookmarked or copied
+      
+      //check transfers
+      const isValid = await verifyData(deal)
+      if (isValid) document.getElementById('bannerNotice').innerHTML = 'Looks good! Ready to publish ☑️'
+
+      return deal
     }
+
+    function getKatomicScript() {
+      if (editor) return editor.getValue()                               // formatted
+      else        return document.getElementById('myInputKscript').value // get plain text
+    }
+
+    function setKatomicScript(text) {
+      if (editor) editor.setValue(text)
+      else        document.getElementById('myInputKscript').value = text
+    }
+    
 
 
 	// ┌─┐┌─┐┌─┐┬ ┬  ┌─┐┌─┐┬─┐┌┬┐┌─┐┬  ┬┌┐┌┬┌─
@@ -561,7 +574,9 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 	function updateKatomicURL() {
 	  // Update the URL in the address bar
-	  const katomicScript = document.getElementById('myInputKscript').value
+	  //const katomicScript = document.getElementById('myInputKscript').value
+    const katomicScript = getKatomicScript()
+    
 	  const url = new URL(window.location.href)
 	  url.searchParams.delete('dealId') // if it exists
 	  url.searchParams.delete('typingspeed') // if it exists
@@ -739,7 +754,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		 if (confirmAction) {
 			 if (typingNow) typingNow.cancel()
 		     urlQuery.delete('typingspeed') // if it exists
-			 document.getElementById("myInputKscript").value = ''
+			 //document.getElementById("myInputKscript").value = ''
+       setKatomicScript('')
 			 document.getElementById('bannerNotice').innerHTML = ''
 			 document.getElementById('preview').style.display = 'none'
 			 updateKatomicURL()
@@ -773,7 +789,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
     dropdown.addEventListener("change", async function() {
       if (typingNow) typingNow.cancel()
 	  let dealId = dropdown.value
-	  let myInputKscript = document.getElementById("myInputKscript")
+	  //let myInputKscript = document.getElementById("myInputKscript")
+    let myInputKscript = getKatomicScript()
 	  
       if (myInputKscript.value.trim() !== "") {
         let confirmOverwrite = confirm("This will overwrite your current script, ok?")
@@ -870,7 +887,9 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	async function injectDeal() {
 	  let urlQuery = new URLSearchParams(window.location.search)
 	  if (urlQuery.has('dealId')) {
-		let kscript = document.getElementById("myInputKscript").value
+		//let kscript = document.getElementById("myInputKscript").value
+    let kscript = getKatomicScript()
+    
 		if (kscript.trim() == '') {
 		  let deal = await getDeal(urlQuery.get('dealId'))
 		  console.log(deal, deal)
@@ -881,7 +900,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 				  let typingspeed = urlQuery.get('typingspeed') ?? 10
 				  typingNow = simulateTyping('myInputKscript', kscript, {speed: typingspeed})
 			}
-			else document.getElementById('myInputKscript').value = kscript // fallback
+			//else document.getElementById('myInputKscript').value = kscript // fallback
+      else setKatomicScript(kscript) // fallback
 	
 		 // document.getElementById("myInputKscript").value = kscript
 		}

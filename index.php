@@ -21,7 +21,16 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="katomic.css">
+
   <link rel="icon" href="K.ico" type="image/x-icon">
+
+  <!-- code editor -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script> -->
+  <script src="katomicCodeMirror.js<?php echo '?v=' . filemtime('katomicCodeMirror.js'); ?>"></script>
 
   
   <!-- json formatter https://highlightjs.org/ 
@@ -40,7 +49,17 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 	  <option value="">Choose a template</option>
 	</select>
 
+
     <textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
+
+    <div class="checkbox-wrapper">
+      <input type="checkbox" id="showPretty">
+      <label for="showPretty">Formatted&nbsp(beta)</label>
+
+      <input type="checkbox" id="showAdvanced">
+      <label for="showAdvanced">Advanced&nbspoptions</label>
+    </div>
+
 
 	<span class='dev'>Enter urlWriteDeal (the url called when you hit 'Publish')</span>
 	<input class='dev' id="urlWriteDeal" placeholder="urlWriteDeal eg https://kpos.uk/deal/write/?json" value=""></input>
@@ -79,15 +98,58 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 	  
   </div>
   
+
+  
   <!-- <script src="katomic.js"></script> --> 
   <script>
     var PATH_CONFIG = "config.json?v=<?php echo filemtime('config.json'); ?>"
-	console.log('PATH_CONFIG=',PATH_CONFIG)
+    console.log('PATH_CONFIG=',PATH_CONFIG)
   </script>
+
+  <script src="init.js<?php echo '?v=' . filemtime('init.js'); ?>"></script>
 
   <script src="typing.js"></script>
 
+
+  <script>
+    
+    // toggle options saving to url parameters
+    document.getElementById('showPretty').checked   = urlQuery.has('showPretty')
+    document.getElementById('showAdvanced').checked = urlQuery.has('dev')
+
+    document.getElementById('showPretty').addEventListener('change', function() {
+      urlQuery[this.checked ? 'set' : 'delete']('showPretty', 'true')
+      window.location.search = urlQuery.toString()
+    })
+
+    document.getElementById('showAdvanced').addEventListener('change', function() {
+      urlQuery[this.checked ? 'set' : 'delete']('dev', 'true')
+      window.location.search = urlQuery.toString()
+    })
+
+    
+    var editor
+    if (urlQuery.has('showPretty'))
+        window.onload = function() {
+            editor = CodeMirror.fromTextArea(document.getElementById('myInputKscript'), {
+            lineNumbers: false,
+            mode: "text/katomic",
+            theme: "default"
+            })
+            //document.querySelector('.CodeMirror').style.color = 'blue'; // This should turn all text in the editor blue
+        }
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+      if (editor) window.editor.on("blur", updateKatomicURL) //editor.on("blur", updateKatomicURL)
+      else document.getElementById("myInputKscript").addEventListener("change", updateKatomicURL)
+    })
+
+  </script>
+
+
   <script src="katomic.js<?php echo '?v=' . filemtime('katomic.js'); ?>"></script>
+
 
 </body>
 </html>
