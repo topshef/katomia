@@ -19,16 +19,18 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 <head>
   <title><?=$title?></title>
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=2.5">
   <link rel="stylesheet" href="katomic.css">
 
   <link rel="icon" href="K.ico" type="image/x-icon">
 
   <!-- code editor -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+  <link rel="stylesheet" href="codemirror.min.css">
+  <!--  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css"> -->
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+  <script src="codemirror.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script> -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script> -->
   <script src="katomicCodeMirror.js<?php echo '?v=' . filemtime('katomicCodeMirror.js'); ?>"></script>
 
@@ -41,19 +43,20 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 </head>
 <body>
   <!-- <header> -->
+    <header>
 	  <a href='https://x.com/gokatomic' target='gokatomic'><img id='logo' src="logo.png" alt="Kato" class="logo"></a>
 	  <div class="logo-text"> <strong>Kato</strong> is <strong>#katomic</strong></div>
+    </header>
   <!-- </header> -->
   
 	<select id="kscriptTemplateOptions">
 	  <option value="">Choose a template</option>
 	</select>
 
-
     <textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
 
     <div class="checkbox-wrapper">
-      <input type="checkbox" id="showPretty">
+      <input type="checkbox" id="showPretty" checked>
       <label for="showPretty">Formatted&nbsp(beta)</label>
 
       <input type="checkbox" id="showAdvanced">
@@ -131,14 +134,21 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
     var editor
     if (urlQuery.has('showPretty'))
         window.onload = function() {
+            urlQuery.delete('typingspeed')
             editor = CodeMirror.fromTextArea(document.getElementById('myInputKscript'), {
             lineNumbers: false,
             mode: "text/katomic",
-            theme: "default"
+            theme: "default",
+            lineWrapping: true
             })
+
+            //hide template options (as not working atm)
+            //document.getElementById('kscriptTemplateOptions').style.display = 'none'
+            
+            document.querySelector('header').style.display = 'none'
             //document.querySelector('.CodeMirror').style.color = 'blue'; // This should turn all text in the editor blue
         }
-
+        
 
     document.addEventListener("DOMContentLoaded", function() {
       if (editor) window.editor.on("blur", updateKatomicURL) //editor.on("blur", updateKatomicURL)

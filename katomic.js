@@ -755,7 +755,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 			 if (typingNow) typingNow.cancel()
 		     urlQuery.delete('typingspeed') // if it exists
 			 //document.getElementById("myInputKscript").value = ''
-       setKatomicScript('')
+             setKatomicScript('')
 			 document.getElementById('bannerNotice').innerHTML = ''
 			 document.getElementById('preview').style.display = 'none'
 			 updateKatomicURL()
@@ -790,9 +790,9 @@ for(let i = 0; i < detectionFuncs.length; i++) {
       if (typingNow) typingNow.cancel()
 	  let dealId = dropdown.value
 	  //let myInputKscript = document.getElementById("myInputKscript")
-    let myInputKscript = getKatomicScript()
-	  
-      if (myInputKscript.value.trim() !== "") {
+      let myInputKscript = getKatomicScript()
+	  //console.log(myInputKscript)
+      if (myInputKscript.trim() !== "") {
         let confirmOverwrite = confirm("This will overwrite your current script, ok?")
         if (!confirmOverwrite) {
           dropdown.value = '' // Reset the dropdown to the default option
@@ -805,11 +805,11 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  
 		  
 	  if (urlQuery.has('typingspeed') && typeof simulateTyping === 'function') {
-		  myInputKscript.value = ''
+		  setKatomicScript('') //myInputKscript = ''
 		  let typingspeed = urlQuery.get('typingspeed') ?? 10
 		  typingNow = simulateTyping('myInputKscript', kscript, {speed: typingspeed})
 	  }
-	  else myInputKscript.value = kscript // fallback
+	  else setKatomicScript(kscript) // fallback
 	  
 
 	})

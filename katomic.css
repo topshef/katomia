@@ -16,39 +16,41 @@
 	}
 
 
-	.dev {
-		display: none;
-	}
+    .dev {
+        display: none;
+    }
 
-  #kscriptTemplateOptions, input {
+    #kscriptTemplateOptions, input {
     padding: 5px;
     margin: 10px;
     border: 1px solid #ccc;
     border-radius: 3px;
-  }
-  
-
- 	
-  textarea, input, .CodeMirror {
-	  margin: 10px;
-    padding: 10px;
-	  width: calc(min(90%, var(--max-width))); /* allows user to resize */
-	  /* width: 70%; */
-	  /* max-width: 500px; */
-     
-    resize: both;
-    border-radius: 8px; /* Round the corners of the textarea */
-    font-family: 'Poppins', sans-serif;
-	  font-size: 16px;
-    font-weight: bold;
     }
 
-  .CodeMirror {
+
+ 	
+    textarea, input, .CodeMirror {
+        margin: 10px;
+        padding: 10px;
+        width: calc(min(90%, var(--max-width))); /* allows user to resize */
+        /* width: 70%; */
+        /* max-width: 500px; */
+
+        resize: both;
+        border-radius: 8px; /* Round the corners of the textarea */
+        font-family: 'Poppins', sans-serif;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .CodeMirror {
       font-family: 'Fira Code', monospace; 
       font-weight: normal;
-  }  
+      width: 95vw !important;
+      height: 80vh !important;
+    }  
 
-  textarea {
+    textarea {
 		height: 20em;
 	}
 	
@@ -169,4 +171,3 @@ input[type="checkbox"] + label {
   margin: 0;
   padding: 0;
 }
-
