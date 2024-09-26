@@ -116,8 +116,23 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 
   <script>
     
+    if (urlQuery.has('dev'))
+        document.getElementById('kscriptTemplateOptions').style.display = 'none'
+    
     // toggle options saving to url parameters
     document.getElementById('showPretty').checked   = urlQuery.has('showPretty')
+    
+    console.log(urlQuery.has('dealId') , urlQuery.has('showPretty'))
+    //default to show pretty if there's a dealId in the URL
+    if (urlQuery.has('dealId') && !urlQuery.has('showPretty')) {
+        console.log('default to pretty')
+        //document.getElementById('showPretty').checked = 1
+        urlQuery['set']('showPretty', 'true')
+        urlQuery['set']('dev', 'true')
+        
+        window.location.search = urlQuery.toString()
+        
+    }
     document.getElementById('showAdvanced').checked = urlQuery.has('dev')
 
     document.getElementById('showPretty').addEventListener('change', function() {
