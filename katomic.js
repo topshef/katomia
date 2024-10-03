@@ -483,7 +483,10 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 	//todo build in account check using 5 char checksum HIP15 #1
 	function detectAlias(line) {
-	  const pattern = /^([a-zA-Z0-9_-]+) is (\d+\.\d+\.\d+)$/i
+	  // const pattern = /^([a-zA-Z0-9_-]+) is (\d+\.\d+\.\d+)$/i  // basic account pattern only eg 0.0.1234
+      // const pattern = /^([a-zA-Z0-9_-]+) is (\d+(?:\.\d+)*)$/i  // allow alias for serial number
+      const pattern = /^([a-zA-Z0-9_-]+) is (\d+(?:\.\d+)*(?:-\d+)?)$/i  // allow eg 0.0.12345-99
+
 	  const matches = line.match(pattern)
 	  if (!matches) return false
 	  const alias = matches[1]
