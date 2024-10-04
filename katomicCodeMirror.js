@@ -19,13 +19,16 @@ CodeMirror.defineMode('modeKatomic', function() {
     
     // Define an array of regex-class pairs with corresponding CSS
     const rules = [
+
+        { regex: /https:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/, className: 'domain', css: 'color: blue;' }, // Matches domains starting with "https://"
         { regex: /(\d+\.\d+\.\d+)/, className: 'hentity', css: 'color: purple;' },
         { regex: /\btestnet\b/, className: 'network-testnet', css: 'color: #ff00bf; font-weight: bold;' },
         { regex: /\bmainnet\b/, className: 'network-mainnet', css: 'color: #0000ff; font-weight: bold;' },
         { regex: /\bis\b/, className: 'verb', css: 'color: grey;' },
         { regex: /\bsends\b/, className: 'verb', css: 'color: grey;' },
         { regex: /\breceives\b/, className: 'verb', css: 'color: grey;' },
-        { regex: /^(\/\/|#).*/, className: 'kcomment', css: 'color: green;' }, // Matches lines starting with "//" or "#"
+        { regex: /^(\/\/ |# ).*/, className: 'kcomment', css: 'color: green;' }, // Matches lines starting with "//" or "#"
+
         { regex: /^(display|constants|conditions|parameters|api)\b/, className: 'kkeyword', css: 'color: blue;' },         
         { regex: /\{[a-zA-Z_]+\}/, className: 'kvar', css: 'color: purple;' },
         
@@ -37,6 +40,7 @@ CodeMirror.defineMode('modeKatomic', function() {
 
     return {
         token: function(stream) {
+
             for (let i = 0; i < rules.length; i++) {
                 if (stream.match(rules[i].regex)) {
                     return rules[i].className;
