@@ -279,7 +279,10 @@ for(let i = 0; i < detectionFuncs.length; i++) {
     
         if (line.includes('://')) return [line.trim(), undefined] // don't allow mid-line comments if url eg https://
 
-        const parts = line.split(/(\/\/|#(?![1-9]))(.+)/) // split by // or # (unless # represents a serial)
+        const parts = line.split(/(\/\/|\s#\s|^#\s)(.+)/) // Adjust the regex to match # when preceded by space/start and followed by space
+        //ie avoid matching it if used a a hashtag or bookmark etc
+        // then we dont need https:// match which anyway breaks if injecting constants as urls
+        // const parts = line.split(/(\/\/|#(?![1-9]))(.+)/) // split by // or # (unless # represents a serial)
 
         if (parts.length > 1) return [parts[0].trim(), parts[2]]
 
