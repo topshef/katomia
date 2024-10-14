@@ -30,7 +30,7 @@ CodeMirror.defineMode('modeKatomic', function() {
         { regex: /^(\/\/ |# ).*/, className: 'kcomment', css: 'color: green;' }, // Matches lines starting with "//" or "#"
 
         { regex: /^(display|constants|conditions|parameters|api)\b/, className: 'kkeyword', css: 'color: blue;' },         
-        { regex: /\{[a-zA-Z_]+\}/, className: 'kvar', css: 'color: purple;' },
+        { regex: /\{[0-9a-zA-Z_]+\}/, className: 'kvar', css: 'color: purple;' },
         
         
     ]

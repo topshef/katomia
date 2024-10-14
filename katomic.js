@@ -113,84 +113,54 @@
         if (!line) return false // skip empty lines
 		
         result = detectNetwork(line)
-		if (result) {
-			network = result  // global var
-			return false
-		}
+        if (result) return (network = result) && false // global var
 		
         result = detectDisplayParameter(line)
-		if (result) {
-			//display.push(result)
-			Object.assign(display, result)
-			return false
-		}
+		if (result) return Object.assign(display, result) && false
 
-        result = detectAlias(line)
+        result = detectAlias(line)  
 		if (result) {
-			Object.assign(alias, result)
-			//alias.push(result)
-			return false
-		}
+            Object.assign(alias, result)
+            Object.assign(constants, result) // add aliases to constants also. maybe redundant in some cases
+            return false
+        }
+
+        // constants fixed by the deal, these can act like aliases
+        result = detectKeyValuePair(line, '(const|constant|constants)')
+        if (result) return Object.assign(constants, result) && false
+            // constants = {...constants, ...result}  // same but not needed unless making a copy
 
 		userInput = rawline
 		line = injectAlias(line, alias)
+		// line = injectConstants(line, constants) // do same for constants since they cant be changed later?
 		console.log('line is' ,line)
 		
-		
 		result = detectTransferHbar(line)
-		if (result) {
-			addHbarTransfer.push({...result, userInput})
-			return false
-		}
+		if (result) return addHbarTransfer.push({...result, userInput}) && false
 		
 		result = detectTransferFT(line)
-		if (result) {
-			addTokenTransfer.push({...result, userInput})
-			return false
-		}
-
+		if (result) return addTokenTransfer.push({...result, userInput}) && false
 
 		result = detectTransferNFT(line)
-		if (result) {
-			addNftTransfer.push({...result, userInput})
-			return false
-		}
+		if (result) return addNftTransfer.push({...result, userInput}) && false
 
 		result = detectTransferNFTviaSpender(line)
-		if (result) {
-			addNftTransfer.push({...result, userInput})
-			return false
-		}
+		if (result) return addNftTransfer.push({...result, userInput}) && false
 		
         //todo consider condensing into loop
 
-        // constants fixed by the deal
-        result = detectKeyValuePair(line, 'constants')
-        if (result) {
-            constants = {...constants, ...result}
-            return false
-        }
 
         // user injected parameters
-        result = detectKeyValuePair(line, 'parameters')
-        if (result) {
-            parameters = {...parameters, ...result}
-            return false
-        }
+        result = detectKeyValuePair(line, '(parm|param|parameter|parameters)')
+        if (result) return Object.assign(parameters, result) && false
 
         // external api calls eg fx rates
         result = detectKeyValuePair(line, 'api')
-        if (result) {
-            api = {...api, ...result}
-            return false
-        }
+        if (result) return Object.assign(api, result) && false
 
         // custom scripts to allow/deny deals
 		result = detectConditions(line)
-		if (result) {
-			conditions.push(result)
-			return false
-		}
+		if (result) return conditions.push(result) && false
         
 		return true
       })
@@ -243,7 +213,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 
 	function detectConditions(line) {
 		// eg conditions 0 scriptName myscript
-		const regex = /conditions\s+(?<index>\d+)\s+(?<fieldName>\w+)\s+(?<fieldValue>.+)/
+		const regex = /(condition|conditions)\s+(?<index>\d+)\s+(?<fieldName>\w+)\s+(?<fieldValue>.+)/
 		let matches = line.match(regex)
 		if(matches)
 		 return [ { [matches.groups.index]: { [matches.groups.fieldName]: matches.groups.fieldValue } } ]
@@ -374,7 +344,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		//const pattern = /^(\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
 		//const pattern = /^(buyer|\d+\.\d+\.\d+) (receives|sends) ([0-9.]+) (\d+\.\d+\.\d+)$/
 		//const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[a-z0-9_-]+}) (?<verb>receives|sends) (?<value>[0-9.]+|{[a-z0-9_-]+}) (?<tokenId>\d+\.\d+\.\d+|{[a-z0-9_-]+})$/i
-        const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[a-z0-9_-]+}) (?<verb>receives|sends) (?<value>[\w\-+/*.{}]+) (?<tokenId>\d+\.\d+\.\d+|{[a-z0-9_-]+})$/i
+        const pattern = /^(?<accountId>buyer|\d+\.\d+\.\d+|{[\w\-]+}) (?<verb>receives|sends) (?<value>[\w\-+/*.{}]+) (?<tokenId>\d+\.\d+\.\d+|{[\w\-]+})$/i
         
 		const matches = line.match(pattern)
 		if (!matches) return false
@@ -391,17 +361,19 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 			if (isNumber) value = -1 * value
             else value = '-' + value         
        
-
-        let decimals = getDecimals(network, tokenId)
-        if (!decimals && decimals !== 0) {
-            errorMessages.push(`could not find decimals for token ${tokenId}`)
-            return false
-        }
+        // if using alias that's still hard-coded. only {vars} not
+        let isTokenHardcoded = tokenId.match(/\d+\.\d+\.\d+/)
+        
+        if (isTokenHardcoded && isNumber) {  
+            let decimals = getDecimals(network, tokenId)
+            if (!decimals && decimals !== 0) {
+                errorMessages.push(`could not find decimals for token ${tokenId}`)
+                return false
+            }
+            value = value * Math.pow(10, decimals)
             
-        if (isNumber) value = value * Math.pow(10, decimals)
-        else window.alert('Warning: value is an expression, so amount must be injected as a whole integer. Proceed with caution')
-
-
+        } else window.alert('Warning: amount is an expression, or token ID is an injected parameter, so amount must resolve to a whole integer. Proceed with extreme caution')
+            
 		return {tokenId, accountId, value}
 		
 		//matching https://docs.hedera.com/hedera/sdks-and-apis/sdks/tokens/transfer-tokens
@@ -483,7 +455,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 			line = line.replace(new RegExp("\\b" + alias + "\\b", 'g'), aliases[alias])
 		return line
 	}
-
+    
 	//todo build in account check using 5 char checksum HIP15 #1
 	function detectAlias(line) {
 	  // const pattern = /^([a-zA-Z0-9_-]+) is (\d+\.\d+\.\d+)$/i  // basic account pattern only eg 0.0.1234
