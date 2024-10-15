@@ -336,6 +336,16 @@ for(let i = 0; i < detectionFuncs.length; i++) {
         return true
     }
 
+
+    const alertedMessages = {}
+
+    function alertOnce(message) {
+      if (!alertedMessages[message]) {
+        window.alert(message)
+        alertedMessages[message] = true
+      }
+    }
+    
 	// ┌┬┐┌─┐┌┬┐┌─┐┌─┐┌┬┐  ╔═╗╔╦╗  ┌┬┐┬─┐┌─┐┌┐┌┌─┐┌─┐┌─┐┬─┐
 	 // ││├┤  │ ├┤ │   │   ╠╣  ║    │ ├┬┘├─┤│││└─┐├┤ ├┤ ├┬┘
 	// ─┴┘└─┘ ┴ └─┘└─┘ ┴   ╚   ╩    ┴ ┴└─┴ ┴┘└┘└─┘└  └─┘┴└─
@@ -372,7 +382,9 @@ for(let i = 0; i < detectionFuncs.length; i++) {
             }
             value = value * Math.pow(10, decimals)
             
-        } else window.alert('Warning: amount is an expression, or token ID is an injected parameter, so amount must resolve to a whole integer. Proceed with extreme caution')
+        } else alertOnce('Warning: amount is an expression, or token ID is an injected parameter, so amount must resolve to a whole integer. Proceed with extreme caution')
+        
+            //window.alert('Warning: amount is an expression, or token ID is an injected parameter, so amount must resolve to a whole integer. Proceed with extreme caution')
             
 		return {tokenId, accountId, value}
 		
