@@ -790,7 +790,8 @@ for(let i = 0; i < detectionFuncs.length; i++) {
         }
       }
 	  
-	  let deal = await getDeal(dealId)
+	  let deal
+      ({dealId, deal} = await getDeal(dealId))
       let kscript = deal.userInput ?? 'Katomic script not found (deal may pre-date Kato!)'  
 	  
 		  
@@ -859,10 +860,11 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		// network can be added to the query parameters, but if omitted this is located automatically
 		
 		const url = `https://kpos.uk/deal/query/?dealId=${dealId}`
-		console.log(`fetching ${url}`)
 		const response = await fetch(url)
 		const result = await response.json()
-		return result.deal
+		console.log(`fetching ${url}`, result)
+
+		return {dealId: result.dealId, deal: result.deal}
 	}
 
 
@@ -878,22 +880,25 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	  let urlQuery = new URLSearchParams(window.location.search)
 	  if (urlQuery.has('dealId')) {
 		//let kscript = document.getElementById("myInputKscript").value
-    let kscript = getKatomicScript()
+        let kscript = getKatomicScript()
     
 		if (kscript.trim() == '') {
-		  let deal = await getDeal(urlQuery.get('dealId'))
-		  console.log(deal, deal)
-		  kscript = deal.userInput ?? 'Katomic script not found (deal may pre-date Kato!)'
-		  //simulateTyping('myInputKscript', kscript, {speed: 20})
-		  
-			if (urlQuery.has('typingspeed') && typeof simulateTyping === 'function') {
-				  let typingspeed = urlQuery.get('typingspeed') ?? 10
-				  typingNow = simulateTyping('myInputKscript', kscript, {speed: typingspeed})
-			}
-			//else document.getElementById('myInputKscript').value = kscript // fallback
-      else setKatomicScript(kscript) // fallback
+            let {dealId, deal} = await getDeal(urlQuery.get('dealId'))
+            // console.log(deal, deal)
+            if (dealId)
+                document.getElementById('dealId').innerText = `Deal ${dealId}`
+            
+            kscript = deal.userInput ?? 'Katomic script not found (deal may pre-date Kato!)'
+            //simulateTyping('myInputKscript', kscript, {speed: 20})
+
+            if (urlQuery.has('typingspeed') && typeof simulateTyping === 'function') {
+                  let typingspeed = urlQuery.get('typingspeed') ?? 10
+                  typingNow = simulateTyping('myInputKscript', kscript, {speed: typingspeed})
+            }
+            //else document.getElementById('myInputKscript').value = kscript // fallback
+            else setKatomicScript(kscript) // fallback
 	
-		 // document.getElementById("myInputKscript").value = kscript
+            // document.getElementById("myInputKscript").value = kscript
 		}
 	  }
 	}

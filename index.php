@@ -52,7 +52,7 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 	<select id="kscriptTemplateOptions">
 	  <option value="">Choose a template</option>
 	</select>
-
+    <code id='dealId' style='color:grey;'></code>
     <textarea id="myInputKscript" placeholder="Enter some #katomic script"></textarea>
 
     <div class="checkbox-wrapper">
@@ -64,7 +64,7 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
     </div>
 
 
-	<span class='dev'>Enter urlWriteDeal (the url called when you hit 'Publish')</span>
+	<span class='dev'>Enter 'Publish' webhook <code>urlWriteDeal</code></span>
 	<input class='dev' id="urlWriteDeal" placeholder="urlWriteDeal eg https://kpos.uk/deal/write/?json" value=""></input>
 
   <div id='buttonsContainer'>
