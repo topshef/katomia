@@ -170,6 +170,24 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
       else document.getElementById("myInputKscript").addEventListener("change", updateKatomicURL)
     })
 
+
+    // if user input is a hex string only then redirect to lookup that as the deal
+    document.getElementById('btnPreview').addEventListener('click', function() {
+        const inputKscript = document.getElementById('myInputKscript').value.trim()
+
+        // Check if the input is a valid hexadecimal string (one line, no other characters)
+        const hexRegex = /^[a-fA-F0-9]+$/
+        if (hexRegex.test(inputKscript)) {
+            // Update the URL with the hex string as dealId and reload the page
+            const currentUrl = new URL(window.location.href)
+            currentUrl.searchParams.set('dealId', inputKscript)
+            currentUrl.searchParams.delete('kscript')
+
+            window.location.href = currentUrl.toString()
+        }
+    })
+
+
   </script>
 
 
