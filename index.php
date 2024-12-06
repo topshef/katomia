@@ -44,7 +44,7 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 <body>
   <!-- <header> -->
     <header>
-	  <a href='https://x.com/gokatomic' target='gokatomic'><img id='logo' src="logo.png" alt="Kato" class="logo"></a>
+	  <a href='https://x.com/gokatomic' target='gokatomic'><img id='logo' src="kato2.png" alt="Kato" class="logo"></a>
 	  <div class="logo-text"> <strong>Kato</strong> is <strong>#katomic</strong></div>
     </header>
   <!-- </header> -->
@@ -116,7 +116,7 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 
   <script>
     
-    if (urlQuery.has('dev'))
+    if (urlQuery.has('dev') || urlQuery.has('showPretty'))
         document.getElementById('kscriptTemplateOptions').style.display = 'none'
     
     // toggle options saving to url parameters
