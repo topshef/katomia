@@ -774,11 +774,15 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 	//placeholder.. templates
 	//already defined let urlQuery = new URLSearchParams(window.location.search)
 	 
-    let dropdown = document.getElementById("kscriptTemplateOptions")
+  let dropdown = document.getElementById("kscriptTemplateOptions")
 
-    dropdown.addEventListener("change", async function() {
-      if (typingNow) typingNow.cancel()
-	  let dealId = dropdown.value
+  dropdown.addEventListener("change", async function() {
+		// urlQuery.delete('dealId')
+    if (typingNow) {
+			typingNow.cancel()
+			urlQuery.delete('typingspeed')
+		}
+		let dealId = dropdown.value
 	  //let myInputKscript = document.getElementById("myInputKscript")
       let myInputKscript = getKatomicScript()
 	  //console.log(myInputKscript)
@@ -861,6 +865,7 @@ for(let i = 0; i < detectionFuncs.length; i++) {
 		
 		const url = `https://kpos.uk/deal/query/?dealId=${dealId}`
 		const response = await fetch(url)
+		console.log(`fetching ${url}`)        
 		const result = await response.json()
 		console.log(`fetching ${url}`, result)
 

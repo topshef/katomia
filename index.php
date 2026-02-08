@@ -64,7 +64,7 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
     </div>
 
 
-	<span class='dev'>Enter 'Publish' webhook <code>urlWriteDeal</code></span>
+	<span class='dev'>Publish to webhook</span>
 	<input class='dev' id="urlWriteDeal" placeholder="urlWriteDeal eg https://kpos.uk/deal/write/?json" value=""></input>
 
   <div id='buttonsContainer'>
@@ -115,30 +115,53 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 
 
   <script>
+
+		const pretty = (() => {
+			const v = urlQuery.get('showPretty')
+			if (v === '1') return true
+			if (v === '0') return false
+			return !urlQuery.has('kscript')
+		})()
     
-    if (urlQuery.has('dev') || urlQuery.has('showPretty'))
+    // if (urlQuery.has('dev') || urlQuery.has('showPretty'))
+		if (urlQuery.has('dev') || pretty)
         document.getElementById('kscriptTemplateOptions').style.display = 'none'
     
     // toggle options saving to url parameters
-    document.getElementById('showPretty').checked   = urlQuery.has('showPretty')
+    // document.getElementById('showPretty').checked   = urlQuery.has('showPretty')
+		document.getElementById('showPretty').checked = pretty
     
     console.log(urlQuery.has('dealId') , urlQuery.has('showPretty'))
-    //default to show pretty if there's a dealId in the URL
-    if (urlQuery.has('dealId') && !urlQuery.has('showPretty')) {
+		//default to show pretty if there's a dealId in the URL (but NOT when kscript is present)
+		if (urlQuery.has('dealId') && !urlQuery.has('showPretty') && !urlQuery.has('kscript')) {
+	
         console.log('default to pretty')
         //document.getElementById('showPretty').checked = 1
-        urlQuery['set']('showPretty', 'true')
-        urlQuery['set']('dev', 'true')
+				urlQuery.set('showPretty', '1')
+        //urlQuery['set']('dev', 'true')
         
         window.location.search = urlQuery.toString()
         
     }
     document.getElementById('showAdvanced').checked = urlQuery.has('dev')
 
-    document.getElementById('showPretty').addEventListener('change', function() {
-      urlQuery[this.checked ? 'set' : 'delete']('showPretty', 'true')
-      window.location.search = urlQuery.toString()
-    })
+		document.getElementById('showPretty').addEventListener('change', async function() {
+			if (this.checked && window.typingNow?.promise)
+				await window.typingNow.promise
+
+			urlQuery.set('showPretty', this.checked ? '1' : '0')
+
+			if (this.checked)
+				urlQuery.delete('typingspeed')
+
+			window.location.search = urlQuery.toString()
+		})
+
+
+		// document.getElementById('showPretty').addEventListener('change', function() {
+			// urlQuery.set('showPretty', this.checked ? '1' : '0')
+			// window.location.search = urlQuery.toString()
+		// })
 
     document.getElementById('showAdvanced').addEventListener('change', function() {
       urlQuery[this.checked ? 'set' : 'delete']('dev', 'true')
@@ -147,7 +170,8 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 
     
     var editor
-    if (urlQuery.has('showPretty'))
+    // if (urlQuery.has('showPretty'))
+		if (pretty)
         window.onload = function() {
             urlQuery.delete('typingspeed')
             editor = CodeMirror.fromTextArea(document.getElementById('myInputKscript'), {
