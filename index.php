@@ -123,12 +123,10 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 			return !urlQuery.has('kscript')
 		})()
     
-    // if (urlQuery.has('dev') || urlQuery.has('showPretty'))
 		if (urlQuery.has('dev') || pretty)
         document.getElementById('kscriptTemplateOptions').style.display = 'none'
     
     // toggle options saving to url parameters
-    // document.getElementById('showPretty').checked   = urlQuery.has('showPretty')
 		document.getElementById('showPretty').checked = pretty
     
     console.log(urlQuery.has('dealId') , urlQuery.has('showPretty'))
@@ -136,7 +134,6 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 		if (urlQuery.has('dealId') && !urlQuery.has('showPretty') && !urlQuery.has('kscript')) {
 	
         console.log('default to pretty')
-        //document.getElementById('showPretty').checked = 1
 				urlQuery.set('showPretty', '1')
         //urlQuery['set']('dev', 'true')
         
@@ -157,11 +154,6 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 			window.location.search = urlQuery.toString()
 		})
 
-
-		// document.getElementById('showPretty').addEventListener('change', function() {
-			// urlQuery.set('showPretty', this.checked ? '1' : '0')
-			// window.location.search = urlQuery.toString()
-		// })
 
     document.getElementById('showAdvanced').addEventListener('change', function() {
       urlQuery[this.checked ? 'set' : 'delete']('dev', 'true')
@@ -197,7 +189,7 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 
     // if user input is a hex string only then redirect to lookup that as the deal
     document.getElementById('btnPreview').addEventListener('click', function() {
-        const inputKscript = document.getElementById('myInputKscript').value.trim()
+				const inputKscript = getKatomicScript().trim()
 
         // Check if the input is a valid hexadecimal string (one line, no other characters)
         const hexRegex = /^[a-fA-F0-9]+$/

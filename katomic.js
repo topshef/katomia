@@ -516,6 +516,9 @@ for(let i = 0; i < detectionFuncs.length; i++) {
     function setKatomicScript(text) {
       if (editor) editor.setValue(text)
       else        document.getElementById('myInputKscript').value = text
+			
+			// script is no longer tied to a fetched deal
+			document.getElementById('dealId').innerText = ''		
     }
     
 
