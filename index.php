@@ -151,14 +151,31 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 			if (this.checked)
 				urlQuery.delete('typingspeed')
 
+			urlQuery.set('kscript', getKatomicScript())  // like pulling teeth
 			window.location.search = urlQuery.toString()
+
 		})
 
 
-    document.getElementById('showAdvanced').addEventListener('change', function() {
-      urlQuery[this.checked ? 'set' : 'delete']('dev', 'true')
-      window.location.search = urlQuery.toString()
-    })
+    // document.getElementById('showAdvanced').addEventListener('change', function() {
+      // urlQuery[this.checked ? 'set' : 'delete']('dev', 'true')
+      // window.location.search = urlQuery.toString()
+    // })
+		
+		document.getElementById('showAdvanced').addEventListener('change', function() {
+			const show = this.checked
+
+			// show/hide advanced UI immediately (no reload, no lost edits)
+			document.querySelectorAll('.dev').forEach(el => {
+				el.style.display = show ? 'block' : 'none'
+			})
+
+			// keep URL in sync without reloading
+			const url = new URL(window.location.href)
+			if (show) url.searchParams.set('dev', 'true')
+			else url.searchParams.delete('dev')
+			history.replaceState(null, '', url.toString())
+		})
 
     
     var editor
@@ -166,12 +183,14 @@ if ($dealId) $title .= ' ' . substr($dealId,0,5);
 		if (pretty)
         window.onload = function() {
             urlQuery.delete('typingspeed')
+
             editor = CodeMirror.fromTextArea(document.getElementById('myInputKscript'), {
             lineNumbers: false,
             mode: "text/katomic",
             theme: "default",
             lineWrapping: true
             })
+						
 
             //hide template options (as not working atm)
             //document.getElementById('kscriptTemplateOptions').style.display = 'none'
